@@ -1,0 +1,97 @@
+# -*- coding: utf-8 -*-
+
+import kivy
+from kivy.app import App
+from kivy.clock import Clock
+
+
+from kivy.uix.label import Label
+from kivy.uix.image import Image
+
+from kivy.lang import Builder
+from kivy.base import runTouchApp
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.properties import StringProperty, ObjectProperty,NumericProperty
+
+# 여기에 kivy파일을 추가함 - 그림파일 불러오기용
+# Builder.load_string('''
+# <MainCharacter>:
+#     text:'MainCharacter'
+#     font_size: 15
+#     Image:
+#         pos: 150, 300
+#         size: 150, 200
+#         source: 'f074.png'
+#         allow_stretch: True
+#         keep_ratio: False
+# ''')
+
+class Status():
+    # hp = NumericProperty(0)
+    # ap = NumericProperty(0)
+    def __init__(self):
+        self.hp = 100
+        self.ap = 33
+
+# class Layout(GridLayout):
+#     elapsed = NumericProperty(0)
+
+#     def __init__(self):
+#         Clock.schedule_interval(self.elapsedTime,0.1)  # 타이머를 설정하기 위함
+
+#     def elapsedTime(self,dt):
+#         self.elapsed += dt
+
+
+
+class MyApp(App):
+
+    # 러닝중임을 나타내는 것 같음?
+    # def loadLevel(self):
+    #     fileName =  join(App.get_running_app().user_data_dir,'level.dat')
+    #     try:
+    #         with open(fileName) as fd:
+    #             userData={}
+    #             userData = json.load(fd)
+    #             return userData["items"],userData["level"]
+    #     except:
+    #         return DEFAULT_NBITEMS , DEFAULT_SHOWTIME
+
+    def build(self):
+        # 빌드시 아이콘 타이틀 지정
+        # self.icon = 'memoIcon.png'
+        self.title = 'Kivy Test'
+
+        # g = EnermyStatus()
+
+
+        # # bind를 통해 타이머를 연결 시킴
+        # g.bind(elapsed=score.updateTime)
+
+        # 몸통을 붙이려면 뷰 / 로직을 분리하는 편이 좋겠음
+        # 있는 그대로 모두 출력해주는 뷰를 만들어야됨 (레이아웃을 활용한)
+        playZone = BoxLayout(orientation='horizontal')
+
+        player = Status()
+        enemy = Status()
+
+        score = Label(text="Hp: %s", size_hint=(0.15, 1))
+        missed = Label(text="Ap: %s", size_hint=(0.15, 1))
+        status = BoxLayout(orientation='vertical', spacing=1, size_hint=(1,.3))
+        status.add_widget(score)
+        status.add_widget(missed)
+
+        playZone.add_widget(status)
+
+        root=FloatLayout()
+        root.add_widget(playZone)
+        return root
+
+
+
+
+if __name__ in ('__main__', '__android__'):
+    MyApp().run()
+
