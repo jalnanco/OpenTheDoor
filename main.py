@@ -21,11 +21,44 @@ Builder.load_string('''
 <TurnBattle>:
     player: player_line
     enermy: enermy_right
+
+    # Player
+    Player:
+        id: player_line
     Label:
         font_size: 70
         center_x: root.width / 4
         top: root.top - 270
         text: "HP: "+ str(root.player.hp)
+    Label:
+        font_size: 30
+        center_x: root.width / 4
+        top: root.top - 210
+        text: "AP: "+ str(root.player.ap)
+    Label:
+        font_size: 20
+        center_x: root.width / 4
+        top: root.top - 180
+        text: root.player.status
+    Label:
+        font_size: 20
+        center_x: root.width * 3 / 16
+        top: root.top - 330
+        text: "exp: " + str(root.player.exp)
+    Label:
+        font_size: 20
+        center_x: root.width * 5 / 16
+        top: root.top - 330
+        text: "gold: " + str(root.player.gold)
+    Image:
+        center_x: root.width / 4
+        center_y: root.center_y + 150
+        source: 'f074.png'
+
+
+    # Enermy
+    Enermy:
+        id: enermy_right
     Label:
         font_size: 70
         center_x: root.width * 3 / 4
@@ -33,19 +66,9 @@ Builder.load_string('''
         text: "HP: " + str(root.enermy.hp)
     Label:
         font_size: 30
-        center_x: root.width / 4
-        top: root.top - 210
-        text: "AP: "+ str(root.player.ap)
-    Label:
-        font_size: 30
         center_x: root.width * 3 / 4
         top: root.top - 210
         text: "AP: " + str(root.enermy.ap)
-    Label:
-        font_size: 20
-        center_x: root.width / 4
-        top: root.top - 180
-        text: root.player.status
     Label:
         font_size: 20
         center_x: root.width * 3 / 4
@@ -55,36 +78,44 @@ Builder.load_string('''
         center_x: root.width * 3 / 4
         center_y: root.center_y + 150
         source: 'f074.png'
-    Image:
-        center_x: root.width / 4
-        center_y: root.center_y + 150
-        source: 'f074.png'
-    Player:
-        id: player_line
-    Enermy:
-        id: enermy_right
+
+    # UI
     TurnButton:
         id: button
         text: "Turn"
         center_x: root.width * 3 / 4
         top: root.top - 400
         on_press: root.battle()
+
+    NextButton:
+        id: button
+        text: "Next"
+        center_x: root.width * 1 / 4
+        top: root.top - 400
+        on_press: root.load("orc")
+
     # debug for size
     # Label:
     #     font_size: 10
     #     center_x: root.width * 1 / 4
     #     top: root.top - 400
-    #     text: "width:" + str(root.width) + "height:" + str(root.height) + "center_xy:" + str(root.center_x) + " " + str(root.center_y)
-
+    #     text: "dir:" + str(dir(root))
 ''')
 
+STATUS_ALIVE = "ALIVE"
+STATUS_DEAD = "DEAD"
+
+
 class TurnButton(Button):
+    pass
+
+class NextButton(Button):
     pass
 
 class User(object):
     hp = NumericProperty(0)
     ap = NumericProperty(0)
-    status = StringProperty("alive")
+    status = StringProperty(STATUS_ALIVE)
 
     def up_score(self, number):
         self.hp += 1
@@ -94,9 +125,10 @@ class User(object):
 
         if self.hp <= 0:
             self.hp = 0
-            self.status = "dead"
+            self.status = STATUS_DEAD
             return 1
         return 0
+
 
 
 class Enermy(User, Widget):
@@ -107,11 +139,11 @@ class Enermy(User, Widget):
         super(User, self).__init__()
 
     def load(self, enemy_info):
-
         self.ap = enemy_info["ap"]
         self.hp = enemy_info["hp"]
         self.exp = enemy_info["exp"]
         self.gold = enemy_info["gold"]
+        self.status = STATUS_ALIVE
 
 
 class Player(User, Widget):
@@ -135,6 +167,7 @@ enemy_data = {"orc":
                "exp":10,
                "gold":100,},
 }
+
 
 def battle(player, enermy):
     """ battle turn """
@@ -164,9 +197,11 @@ class TurnBattle(Widget):
         """ dmg swap """
         battle(self.player, self.enermy)
 
-    def load(self, enemy_name):
+    def init(self):
         self.player.ap = player_data[0]
         self.player.hp = player_data[1]
+
+    def load(self, enemy_name):
         self.enermy.load(enemy_data[enemy_name])
 
 
@@ -176,6 +211,7 @@ class TurnApp(App):
         # self.icon = 'memoIcon.png'
         self.title = 'Kivy Test'
         game = TurnBattle()
+        game.init()
         game.load("orc")
         Clock.schedule_interval(game.update, 1.0 / 60.0)
         return game
