@@ -34,13 +34,23 @@ Builder.load_string('''
     Label:
         font_size: 30
         center_x: root.width / 4
-        top: root.top - 200
+        top: root.top - 210
         text: "AP: "+ str(root.player.ap)
     Label:
         font_size: 30
         center_x: root.width * 3 / 4
-        top: root.top - 200
+        top: root.top - 210
         text: "AP: " + str(root.enermy.ap)
+    Label:
+        font_size: 20
+        center_x: root.width / 4
+        top: root.top - 180
+        text: root.player.status
+    Label:
+        font_size: 20
+        center_x: root.width * 3 / 4
+        top: root.top - 180
+        text: root.enermy.status
     Image:
         center_x: root.width * 3 / 4
         center_y: root.center_y + 150
@@ -49,9 +59,9 @@ Builder.load_string('''
         center_x: root.width / 4
         center_y: root.center_y + 150
         source: 'f074.png'
-    User:
+    Player:
         id: player_line
-    User:
+    Enermy:
         id: enermy_right
     TurnButton:
         id: button
@@ -71,9 +81,10 @@ Builder.load_string('''
 class TurnButton(Button):
     pass
 
-class User(Widget):
+class User(object):
     hp = NumericProperty(0)
     ap = NumericProperty(0)
+    status = StringProperty("alive")
 
     def up_score(self, number):
         self.hp += 1
@@ -81,19 +92,69 @@ class User(Widget):
     def fight(self, ap):
         self.hp -= ap
 
+        if self.hp <= 0:
+            self.hp = 0
+            self.status = "dead"
+            return 1
+        return 0
+
+
+class Enermy(User, Widget):
+    exp = NumericProperty(0)
+    gold = NumericProperty(0)
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__()
+
+    def load(self, enemy_info):
+
+        self.ap = enemy_info["ap"]
+        self.hp = enemy_info["hp"]
+        self.exp = enemy_info["exp"]
+        self.gold = enemy_info["gold"]
+
+
+class Player(User, Widget):
+    exp = NumericProperty(0)
+    gold = NumericProperty(0)
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__()
+
+    def get_reward(self, enemy):
+        self.exp += enemy.exp
+        self.gold += enemy.gold
+
+
+
 
 player_data = [20, 200]
-enemy_data = {"orc": [10, 200],}
-
+enemy_data = {"orc":
+              {"hp":200,
+               "ap":10,
+               "exp":10,
+               "gold":100,},
+}
 
 def battle(player, enermy):
-    """ for battle a vs b """
-    player.fight(enermy.ap)
-    enermy.fight(player.ap)
+    """ battle turn """
+
+    # check for fight
+    if player.hp == 0 or enermy.hp == 0:
+        return
+
+    # take dmg each other
+    if player.fight(enermy.ap):
+        # if dead
+        pass
+    if enermy.fight(player.ap):
+        # if dead
+        player.get_reward(enermy)
+
 
 class TurnBattle(Widget):
-    player = ObjectProperty(None)
-    enermy = ObjectProperty(None)
+    player = Player()
+    enermy = Enermy()
 
     # for animation
     def update(self, dt):
@@ -106,7 +167,7 @@ class TurnBattle(Widget):
     def load(self, enemy_name):
         self.player.ap = player_data[0]
         self.player.hp = player_data[1]
-        self.enermy.ap, self.enermy.hp = enemy_data[enemy_name]
+        self.enermy.load(enemy_data[enemy_name])
 
 
 class TurnApp(App):
