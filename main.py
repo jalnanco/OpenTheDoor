@@ -8,12 +8,18 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 
+from kivy.animation import Animation
+
 from kivy.lang import Builder
 from kivy.base import runTouchApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty, ObjectProperty,NumericProperty
+
+
+#!/usr/bin/kivy
+__version__ = '1.0'
 
 # 여기에 kivy파일을 추가함 - 그림파일 불러오기용
 Builder.load_string('''
@@ -52,7 +58,7 @@ Builder.load_string('''
         text: "gold: " + str(root.player.gold)
     Image:
         center_x: root.width / 4
-        center_y: root.center_y + 150
+        top: root.top - 100
         source: 'f074.png'
 
 
@@ -76,7 +82,7 @@ Builder.load_string('''
         text: root.enermy.status
     Image:
         center_x: root.width * 3 / 4
-        center_y: root.center_y + 150
+        top: root.top - 100
         source: 'f074.png'
 
     # UI
@@ -85,14 +91,14 @@ Builder.load_string('''
         text: "Turn"
         center_x: root.width * 3 / 4
         top: root.top - 400
-        on_press: root.battle()
+        on_press: root.on_main_button(self)
 
-    NextButton:
-        id: button
-        text: "Next"
-        center_x: root.width * 1 / 4
-        top: root.top - 400
-        on_press: root.load("orc")
+    # NextButton:
+    #     id: button
+    #     text: "Next"
+    #     center_x: root.width * 1 / 4
+    #     top: root.top - 400
+    #     on_press: root.load("orc")
 
     # debug for size
     # Label:
@@ -109,8 +115,8 @@ STATUS_DEAD = "DEAD"
 class TurnButton(Button):
     pass
 
-class NextButton(Button):
-    pass
+# class NextButton(Button):
+#     pass
 
 class User(object):
     hp = NumericProperty(0)
@@ -128,7 +134,6 @@ class User(object):
             self.status = STATUS_DEAD
             return 1
         return 0
-
 
 
 class Enermy(User, Widget):
@@ -169,33 +174,30 @@ enemy_data = {"orc":
 }
 
 
-def battle(player, enermy):
-    """ battle turn """
+GAME_STATUS_SEARCH = 0
+GAME_STATUS_BATTLE = 1
+GAME_STATUS_TURN = 2
+GAME_STATUS_REWARD = 3
 
-    # check for fight
-    if player.hp == 0 or enermy.hp == 0:
-        return
-
-    # take dmg each other
-    if player.fight(enermy.ap):
-        # if dead
-        pass
-    if enermy.fight(player.ap):
-        # if dead
-        player.get_reward(enermy)
+def status_name(status):
+    if status == GAME_STATUS_SEARCH:
+        return "SEARCH"
+    if status == GAME_STATUS_BATTLE:
+        return "BATTLE"
+    if status == GAME_STATUS_TURN:
+        return "TURN"
+    if status == GAME_STATUS_REWARD:
+        return "REWARD"
 
 
 class TurnBattle(Widget):
     player = Player()
     enermy = Enermy()
+    status = GAME_STATUS_SEARCH
 
     # for animation
     def update(self, dt):
         pass
-
-    def battle(self):
-        """ dmg swap """
-        battle(self.player, self.enermy)
 
     def init(self):
         self.player.ap = player_data[0]
@@ -203,6 +205,47 @@ class TurnBattle(Widget):
 
     def load(self, enemy_name):
         self.enermy.load(enemy_data[enemy_name])
+
+    def _status_change(self, status):
+        self.status = status
+
+    def on_main_button(self, button):
+        """ on_main_button turn """
+        # button animation (but not good)
+        # print self.player.hp
+        # ratio = self.player.hp / 10
+        # animation = Animation(size=(100 + 2 * ratio, 100 + 2 * ratio),
+        #                       center_x = self.width * 3 / 4,
+        #                       t='out_bounce')
+        # animation.start(button)
+
+
+        # Turn
+        if self.status == GAME_STATUS_SEARCH:
+            self.load("orc")
+            self._status_change(GAME_STATUS_BATTLE)
+        elif self.status == GAME_STATUS_BATTLE:
+            self._status_change(GAME_STATUS_TURN)
+        elif self.status == GAME_STATUS_TURN:
+            # check for fight
+            if self.player.hp == 0 or self.enermy.hp == 0:
+                return
+            # take dmg each other
+            if self.player.fight(self.enermy.ap):
+                # if dead
+                pass
+            if self.enermy.fight(self.player.ap):
+                # if dead
+                self._status_change(GAME_STATUS_REWARD)
+        elif self.status == GAME_STATUS_REWARD:
+            self.player.get_reward(self.enermy)
+            self._status_change(GAME_STATUS_SEARCH)
+        else:
+            raise
+
+        # Text button name change
+        button.text = status_name(self.status)
+
 
 
 class TurnApp(App):
