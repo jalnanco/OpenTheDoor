@@ -45,7 +45,7 @@ Builder.load_string('''
         # 앵커 1 - 메인 전투화면
         AnchorLayout:
             id: anchor
-            BattleScreen:
+            EnermyScreen:
                 id: battle_screen
                 size_hint: None, None
                 size: [min(anchor.width, anchor.height)] * 2
@@ -63,12 +63,12 @@ Builder.load_string('''
                     center_y: battle_screen.center_y + battle_screen.height * 3 / 16
                     center_x: battle_screen.center_x
                 Label:
-                    font_size: 50
+                    font_size: 30
                     center_y: battle_screen.center_y - battle_screen.height * 3 / 16
                     center_x: battle_screen.center_x
                     text: "HP: " + str(root.enermy.hp)
                 Label:
-                    font_size: 30
+                    font_size: 20
                     center_y: battle_screen.center_y - battle_screen.height * 4 / 16
                     center_x: battle_screen.center_x
                     text: "AP: " + str(root.enermy.ap)
@@ -85,7 +85,6 @@ Builder.load_string('''
         # 박스 2
         BoxLayout:
             orientation: 'vertical' if root.height > root.width else 'horizontal'
-            size_hint_y: .25 if root.height > root.width else 1
             BoxLayout:
                 orientation: 'vertical'
                 spacing: '10dp'
@@ -93,7 +92,7 @@ Builder.load_string('''
                 # 박스 2 - 정보표시 1
                 BoxLayout:
                     padding: '10dp'
-                    # spacing: '10dp'
+                    spacing: '10dp'
                     id: user_screen
                     orientation: 'vertical' if root.height > root.width else 'horizontal'
                     canvas.before:
@@ -102,10 +101,12 @@ Builder.load_string('''
                         BorderImage:
                             pos: self.pos
                             size: self.size
-                            source: 'data/round.png'
                     # 박스 2 - 정보표시 1 - 유저 얼굴 1
                     BoxLayout:
                         id: user_screen
+                        padding: '10dp'
+                        spacing: '10dp'
+
                         orientation: 'vertical'  # if root.height > root.width else 'horizontal'
                         canvas.before:
                             Color:
@@ -113,12 +114,11 @@ Builder.load_string('''
                             BorderImage:
                                 pos: self.pos
                                 size: self.size
-                                source: 'data/round.png'
 
-                        # 박스 2 - 정보표시 1 - 유저 얼굴 1
-                        BattleScreen:
+                        # 박스 2 - 정보표시 1 - 유저 정보 2
+                        UserScreen:
                             id: battle_screen2
-                            size_hint: None, None
+                            # size_hint: None, None
                             size: [min(user_screen.width, user_screen.height)] * 2
                             on_size: battle_screen2.reposition()
                             on_pos: battle_screen2.reposition()
@@ -126,34 +126,70 @@ Builder.load_string('''
                                 center_x: battle_screen2.center_x
                                 center_y: battle_screen2.center_y
                                 source: 'data/Ghost_Light_1.png'
-
-
-                    # Image:
-                    #     center_x: self.center_x
-                    #     center_y: self.center_y
-                    #     source: 'data/Ghost_Light_1.png'
-
-                    # Label:
-                    #     text: 'Status'
-                    #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                    #     bold: True
-
+                        # Player Status
+                        BoxLayout:
+                            id: player_status
+                            orientation: 'horizontal' if root.height > root.width else 'vertical'
+                            canvas.before:
+                                Color:
+                                    rgb: 0xbb / 255., 0xdd / 255., 0xa0 / 255.
+                                BorderImage:
+                                    pos: self.pos
+                                    size: self.size
+                            # Label:
+                            #     text: 'Status3'
+                            #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                            #     bold: True
+                            # Player:
+                            #     id: player_line
+                            Label:
+                                font_size: 20
+                                pos: self.pos
+                                text: root.player.status
+                            Label:
+                                font_size: 20
+                                pos: self.pos
+                                # center_y: player_status.center_y
+                                # center_x: player_status.center_x
+                                text: "HP: "+ str(root.player.hp)
+                            Label:
+                                font_size: 20
+                                pos: self.pos
+                                text: "AP: "+ str(root.player.ap)
+                            Label:
+                                font_size: 20
+                                pos: self.pos
+                                text: "exp: " + str(root.player.exp)
+                            Label:
+                                font_size: 20
+                                pos: self.pos
+                                text: "gold: " + str(root.player.gold)
 
                     # 박스 2 - 정보표시 2
                     BoxLayout:
+                        padding: '10dp'
+                        spacing: '10dp'
                         orientation: 'horizontal'
                         canvas.before:
                             Color:
-                                rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
+                                rgb: 0xdd / 255., 0xad / 255., 0xa0 / 255.
                             BorderImage:
                                 pos: self.pos
                                 size: self.size
-                                source: 'data/round.png'
-                        Label:
-                            text: 'Status2'
-                            color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                            bold: True
-# <BattleScreen>:
+                        # Label:
+                        #     text: 'Status2'
+                        #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                        #     bold: True
+                        # UI
+                        TurnButton:
+                            id: button
+                            text: "Turn"
+                            center_x: root.width * 3 / 4
+                            top: root.top - 400
+                            on_press: root.on_main_button(self)
+
+
+# <EnermyScreen>:
     # BoxLayout:
     #     orientation: 'vertical'
     #     canvas.before:
@@ -173,34 +209,6 @@ Builder.load_string('''
     # enermy: enermy_right
 
 
-        # Player
-        # Player:
-        #     id: player_line
-        # Label:
-        #     font_size: 70
-        #     center_x: self.width / 4
-        #     top: root.top - 270
-        #     text: "HP: "+ str(root.player.hp)
-        # Label:
-        #     font_size: 30
-        #     center_x: root.width / 4
-        #     top: root.top - 210
-        #     text: "AP: "+ str(root.player.ap)
-        # Label:
-        #     font_size: 20
-        #     center_x: root.width / 4
-        #     top: root.top - 180
-        #     text: root.player.status
-        # Label:
-        #     font_size: 20
-        #     center_x: root.width * 3 / 16
-        #     top: root.top - 330
-        #     text: "exp: " + str(root.player.exp)
-        # Label:
-        #     font_size: 20
-        #     center_x: root.width * 5 / 16
-        #     top: root.top - 330
-        #     text: "gold: " + str(root.player.gold)
         # Image:
         #     center_x: root.width / 4
         #     top: root.top - 100
@@ -217,13 +225,6 @@ Builder.load_string('''
     #     size: [100, 50]
 
 
-    # # UI
-    # TurnButton:
-    #     id: button
-    #     text: "Turn"
-    #     center_x: root.width * 3 / 4
-    #     top: root.top - 400
-    #     on_press: root.on_main_button(self)
 
     # NextButton:
     #     id: button
@@ -242,8 +243,38 @@ Builder.load_string('''
 
 from kivy.graphics import Color, BorderImage
 
+class UserScreen(Widget):
+    cube_size = NumericProperty(5)
+    cube_padding = NumericProperty(10)
+    score = NumericProperty(0)
 
-class BattleScreen(Widget):
+    def rebuild_background(self):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(0xbb / 255., 0xbc / 255., 0xa0 / 255.)
+            BorderImage(pos=self.pos, size=self.size)
+            Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
+            csize = self.cube_size, self.cube_size
+
+    def reposition(self, *args):
+        self.rebuild_background()
+
+        # # calculate the size of a number
+        # l = min(self.width, self.height)
+        # print l
+        # self.cube_padding = (l / 4.) / 8.
+        # print self.cube_padding
+        # self.cube_size = 10
+        # self.cube_padding = 100
+
+        # # cube_size = (l - (
+        # padding * 5)) / 4.
+        # self.cube_size = cube_size
+        # self.cube_padding = padding
+        # print self.cube_padding, self.cube_size, self.height
+
+
+class EnermyScreen(Widget):
     cube_size = NumericProperty(10)
     cube_padding = NumericProperty(10)
     score = NumericProperty(0)
@@ -252,25 +283,19 @@ class BattleScreen(Widget):
         self.canvas.before.clear()
         with self.canvas.before:
             Color(0xbb / 255., 0xad / 255., 0xa0 / 255.)
-            BorderImage(pos=self.pos, size=self.size, source='data/round.png')
+            BorderImage(pos=self.pos, size=self.size)
             Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
             csize = self.cube_size, self.cube_size
-            # for ix, iy in self.iterate_pos():
-            #     BorderImage(pos=self.index_to_pos(ix, iy), size=csize,
-            #     source='data/round.png')
 
     def reposition(self, *args):
         self.rebuild_background()
+
         # calculate the size of a number
         l = min(self.width, self.height)
         padding = (l / 4.) / 8.
         cube_size = (l - (padding * 5)) / 4.
         self.cube_size = cube_size
         self.cube_padding = padding
-
-        # for ix, iy, number in self.iterate():
-        #     number.size = cube_size, cube_size
-        #     number.pos = self.index_to_pos(ix, iy)
 
 
 
