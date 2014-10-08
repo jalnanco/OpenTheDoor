@@ -17,6 +17,9 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty, ObjectProperty,NumericProperty
 
+from kivy.uix.spinner import Spinner
+
+
 
 #!/usr/bin/kivy
 __version__ = '1.0'
@@ -25,73 +28,175 @@ __version__ = '1.0'
 Builder.load_string('''
 
 <TurnBattle>:
-    player: player_line
-    enermy: enermy_right
+    # 전체 공간
+    BoxLayout:
+        pos: root.pos
+        size: root.size
+        padding: '10dp'
+        spacing: '10dp'
+        orientation: 'vertical' if self.height > self.width else 'horizontal'
+        canvas:
+            Color:
+                rgb: 0xfa / 255., 0xf8 / 255., 0xef / 255.
+            # BackGroundColor
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        # 앵커 1 - 메인 전투화면
+        AnchorLayout:
+            id: anchor
+            BattleScreen:
+                id: game
+                size_hint: None, None
+                size: [min(anchor.width, anchor.height)] * 2
+                on_size: self.reposition()
+                on_pos: self.reposition()
+            Label:
+                text: 'Main'
+                color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                bold: True
 
-    # Player
-    Player:
-        id: player_line
-    Label:
-        font_size: 70
-        center_x: root.width / 4
-        top: root.top - 270
-        text: "HP: "+ str(root.player.hp)
-    Label:
-        font_size: 30
-        center_x: root.width / 4
-        top: root.top - 210
-        text: "AP: "+ str(root.player.ap)
-    Label:
-        font_size: 20
-        center_x: root.width / 4
-        top: root.top - 180
-        text: root.player.status
-    Label:
-        font_size: 20
-        center_x: root.width * 3 / 16
-        top: root.top - 330
-        text: "exp: " + str(root.player.exp)
-    Label:
-        font_size: 20
-        center_x: root.width * 5 / 16
-        top: root.top - 330
-        text: "gold: " + str(root.player.gold)
-    Image:
-        center_x: root.width / 4
-        top: root.top - 100
-        source: 'f074.png'
+        # 박스 2
+        BoxLayout:
+            orientation: 'vertical' if root.height > root.width else 'horizontal'
+            size_hint_y: .25 if root.height > root.width else 1
+            BoxLayout:
+                orientation: 'vertical'
+                spacing: '10dp'
+
+                # 박스 2 - 정보표시 1
+                BoxLayout:
+                    orientation: 'vertical' if root.height > root.width else 'horizontal'
+                    canvas.before:
+                        Color:
+                            rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
+                        BorderImage:
+                            pos: self.pos
+                            size: self.size
+                            source: 'data/round.png'
+                    Label:
+                        text: 'Status'
+                        color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                        bold: True
+
+                # 박스 2 - 정보표시 2
+                BoxLayout:
+                    orientation: 'vertical'
+                    canvas.before:
+                        Color:
+                            rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
+                        BorderImage:
+                            pos: self.pos
+                            size: self.size
+                            source: 'data/round.png'
+
+                    Label:
+                        text: 'Status2'
+                        color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                        bold: True
+# <BattleScreen>:
+    # BoxLayout:
+    #     orientation: 'vertical'
+    #     canvas.before:
+    #         Color:
+    #             rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
+    #         BorderImage:
+    #             pos: self.pos
+    #             size: self.size
+    #             source: 'data/round.png'
+    # Label:
+    #     text: 'HP'
+    #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+    #     font_size: self.height / 1.5
+    #     size_hint_y: .5
+    #     bold: True
+    # Label:
+    #     text: str("BattleScreen")
+    #     font_size: self.height / 1.5
+    #     bold: True
+
+# Game2048:
+# id: game
+# on_size: self.reposition()
+# on_pos: self.reposition()
+
+    # player: player_line
+    # enermy: enermy_right
 
 
-    # Enermy
-    Enermy:
-        id: enermy_right
-    Label:
-        font_size: 70
-        center_x: root.width * 3 / 4
-        top: root.top - 270
-        text: "HP: " + str(root.enermy.hp)
-    Label:
-        font_size: 30
-        center_x: root.width * 3 / 4
-        top: root.top - 210
-        text: "AP: " + str(root.enermy.ap)
-    Label:
-        font_size: 20
-        center_x: root.width * 3 / 4
-        top: root.top - 180
-        text: root.enermy.status
-    Image:
-        center_x: root.width * 3 / 4
-        top: root.top - 100
-        source: 'f074.png'
+        # Player
+        # Player:
+        #     id: player_line
+        # Label:
+        #     font_size: 70
+        #     center_x: self.width / 4
+        #     top: root.top - 270
+        #     text: "HP: "+ str(root.player.hp)
+        # Label:
+        #     font_size: 30
+        #     center_x: root.width / 4
+        #     top: root.top - 210
+        #     text: "AP: "+ str(root.player.ap)
+        # Label:
+        #     font_size: 20
+        #     center_x: root.width / 4
+        #     top: root.top - 180
+        #     text: root.player.status
+        # Label:
+        #     font_size: 20
+        #     center_x: root.width * 3 / 16
+        #     top: root.top - 330
+        #     text: "exp: " + str(root.player.exp)
+        # Label:
+        #     font_size: 20
+        #     center_x: root.width * 5 / 16
+        #     top: root.top - 330
+        #     text: "gold: " + str(root.player.gold)
+        # Image:
+        #     center_x: root.width / 4
+        #     top: root.top - 100
+        #     source: 'f074.png'
 
-    # UI
-    TurnButton:
-        id: button
-        text: "Turn"
-        center_x: root.width * 3 / 4
-        top: root.top - 400
-        on_press: root.on_main_button(self)
+
+    # # Enermy
+    # Enermy:
+    #     id: enermy_right
+    # Label:
+    #     font_size: 70
+    #     center_x: root.width * 3 / 4
+    #     top: root.top - 270
+    #     text: "HP: " + str(root.enermy.hp)
+    # Label:
+    #     font_size: 30
+    #     center_x: root.width * 3 / 4
+    #     top: root.top - 210
+    #     text: "AP: " + str(root.enermy.ap)
+    # Label:
+    #     font_size: 20
+    #     center_x: root.width * 3 / 4
+    #     top: root.top - 180
+    #     text: root.enermy.status
+    # Image:
+    #     center_x: root.width * 3 / 4
+    #     top: root.top - 100
+    #     source: 'data/Ghost_Light_2.png'
+
+    # # Healing Spinner
+    # Spinner:
+    #     text: "auto heal"
+    #     values: ['10%','20%','30%']
+    #     center_x: root.width / 4
+    #     top: root.top - 400
+    #     size: [100, 50]
+
+
+    # # UI
+    # TurnButton:
+    #     id: button
+    #     text: "Turn"
+    #     center_x: root.width * 3 / 4
+    #     top: root.top - 400
+    #     on_press: root.on_main_button(self)
 
     # NextButton:
     #     id: button
@@ -108,15 +213,48 @@ Builder.load_string('''
     #     text: "dir:" + str(dir(root))
 ''')
 
+from kivy.graphics import Color, BorderImage
+
+
+class BattleScreen(Widget):
+
+    cube_size = NumericProperty(10)
+    cube_padding = NumericProperty(10)
+    score = NumericProperty(0)
+
+    def rebuild_background(self):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(0xbb / 255., 0xad / 255., 0xa0 / 255.)
+            BorderImage(pos=self.pos, size=self.size, source='data/round.png')
+            Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
+            csize = self.cube_size, self.cube_size
+            # for ix, iy in self.iterate_pos():
+            #     BorderImage(pos=self.index_to_pos(ix, iy), size=csize,
+            #     source='data/round.png')
+
+
+    def reposition(self, *args):
+        self.rebuild_background()
+        # calculate the size of a number
+        l = min(self.width, self.height)
+        padding = (l / 4.) / 8.
+        cube_size = (l - (padding * 5)) / 4.
+        self.cube_size = cube_size
+        self.cube_padding = padding
+
+        # for ix, iy, number in self.iterate():
+        #     number.size = cube_size, cube_size
+        #     number.pos = self.index_to_pos(ix, iy)
+
+
+
+
 STATUS_ALIVE = "ALIVE"
 STATUS_DEAD = "DEAD"
 
-
 class TurnButton(Button):
     pass
-
-# class NextButton(Button):
-#     pass
 
 class User(object):
     hp = NumericProperty(0)
@@ -163,16 +301,13 @@ class Player(User, Widget):
         self.gold += enemy.gold
 
 
-
-
-player_data = [20, 200]
+player_data = [20, 2000]
 enemy_data = {"orc":
               {"hp":200,
                "ap":10,
                "exp":10,
                "gold":100,},
 }
-
 
 GAME_STATUS_SEARCH = 0
 GAME_STATUS_BATTLE = 1
@@ -246,10 +381,15 @@ class TurnBattle(Widget):
         # Text button name change
         button.text = status_name(self.status)
 
-
+# 컨트롤 부분을 밖으로 빼기 위함
+from kivy.app import App
+app = None
 
 class TurnApp(App):
     def build(self):
+        global app
+        app = self
+
         # 빌드시 아이콘 타이틀 지정
         # self.icon = 'memoIcon.png'
         self.title = 'Kivy Test'
