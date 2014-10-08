@@ -46,15 +46,41 @@ Builder.load_string('''
         AnchorLayout:
             id: anchor
             BattleScreen:
-                id: game
+                id: battle_screen
                 size_hint: None, None
                 size: [min(anchor.width, anchor.height)] * 2
-                on_size: self.reposition()
-                on_pos: self.reposition()
-            Label:
-                text: 'Main'
-                color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                bold: True
+                on_size: battle_screen.reposition()
+                on_pos: battle_screen.reposition()
+                Image:
+                    center_x: battle_screen.center_x
+                    center_y: battle_screen.center_y
+                    source: 'data/Ghost_Light_2.png'
+                Label:
+                    font_size: 20
+                    text: 'Monster Name'
+                    color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                    bold: True
+                    center_y: battle_screen.center_y + battle_screen.height * 3 / 16
+                    center_x: battle_screen.center_x
+                Label:
+                    font_size: 50
+                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
+                    center_x: battle_screen.center_x
+                    text: "HP: " + str(root.enermy.hp)
+                Label:
+                    font_size: 30
+                    center_y: battle_screen.center_y - battle_screen.height * 4 / 16
+                    center_x: battle_screen.center_x
+                    text: "AP: " + str(root.enermy.ap)
+                Label:
+                    font_size: 20
+                    center_y: battle_screen.center_y - battle_screen.height * 5 / 16
+                    center_x: battle_screen.center_x
+                    text: root.enermy.status
+                # Enermy
+                # Enermy:
+                #     id: enermy_right
+
 
         # 박스 2
         BoxLayout:
@@ -66,34 +92,67 @@ Builder.load_string('''
 
                 # 박스 2 - 정보표시 1
                 BoxLayout:
+                    padding: '10dp'
+                    # spacing: '10dp'
+                    id: user_screen
                     orientation: 'vertical' if root.height > root.width else 'horizontal'
                     canvas.before:
                         Color:
-                            rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
+                            rgb: 0x33 / 255., 0xad / 255., 0xa0 / 255.
                         BorderImage:
                             pos: self.pos
                             size: self.size
                             source: 'data/round.png'
-                    Label:
-                        text: 'Status'
-                        color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                        bold: True
+                    # 박스 2 - 정보표시 1 - 유저 얼굴 1
+                    BoxLayout:
+                        id: user_screen
+                        orientation: 'vertical'  # if root.height > root.width else 'horizontal'
+                        canvas.before:
+                            Color:
+                                rgb: 0x33 / 255., 0xcc / 255., 0xa0 / 255.
+                            BorderImage:
+                                pos: self.pos
+                                size: self.size
+                                source: 'data/round.png'
 
-                # 박스 2 - 정보표시 2
-                BoxLayout:
-                    orientation: 'vertical'
-                    canvas.before:
-                        Color:
-                            rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
-                        BorderImage:
-                            pos: self.pos
-                            size: self.size
-                            source: 'data/round.png'
+                        # 박스 2 - 정보표시 1 - 유저 얼굴 1
+                        BattleScreen:
+                            id: battle_screen2
+                            size_hint: None, None
+                            size: [min(user_screen.width, user_screen.height)] * 2
+                            on_size: battle_screen2.reposition()
+                            on_pos: battle_screen2.reposition()
+                            Image:
+                                center_x: battle_screen2.center_x
+                                center_y: battle_screen2.center_y
+                                source: 'data/Ghost_Light_1.png'
 
-                    Label:
-                        text: 'Status2'
-                        color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                        bold: True
+
+                    # Image:
+                    #     center_x: self.center_x
+                    #     center_y: self.center_y
+                    #     source: 'data/Ghost_Light_1.png'
+
+                    # Label:
+                    #     text: 'Status'
+                    #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                    #     bold: True
+
+
+                    # 박스 2 - 정보표시 2
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        canvas.before:
+                            Color:
+                                rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
+                            BorderImage:
+                                pos: self.pos
+                                size: self.size
+                                source: 'data/round.png'
+                        Label:
+                            text: 'Status2'
+                            color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                            bold: True
 # <BattleScreen>:
     # BoxLayout:
     #     orientation: 'vertical'
@@ -104,16 +163,6 @@ Builder.load_string('''
     #             pos: self.pos
     #             size: self.size
     #             source: 'data/round.png'
-    # Label:
-    #     text: 'HP'
-    #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-    #     font_size: self.height / 1.5
-    #     size_hint_y: .5
-    #     bold: True
-    # Label:
-    #     text: str("BattleScreen")
-    #     font_size: self.height / 1.5
-    #     bold: True
 
 # Game2048:
 # id: game
@@ -158,28 +207,6 @@ Builder.load_string('''
         #     source: 'f074.png'
 
 
-    # # Enermy
-    # Enermy:
-    #     id: enermy_right
-    # Label:
-    #     font_size: 70
-    #     center_x: root.width * 3 / 4
-    #     top: root.top - 270
-    #     text: "HP: " + str(root.enermy.hp)
-    # Label:
-    #     font_size: 30
-    #     center_x: root.width * 3 / 4
-    #     top: root.top - 210
-    #     text: "AP: " + str(root.enermy.ap)
-    # Label:
-    #     font_size: 20
-    #     center_x: root.width * 3 / 4
-    #     top: root.top - 180
-    #     text: root.enermy.status
-    # Image:
-    #     center_x: root.width * 3 / 4
-    #     top: root.top - 100
-    #     source: 'data/Ghost_Light_2.png'
 
     # # Healing Spinner
     # Spinner:
@@ -217,7 +244,6 @@ from kivy.graphics import Color, BorderImage
 
 
 class BattleScreen(Widget):
-
     cube_size = NumericProperty(10)
     cube_padding = NumericProperty(10)
     score = NumericProperty(0)
@@ -232,7 +258,6 @@ class BattleScreen(Widget):
             # for ix, iy in self.iterate_pos():
             #     BorderImage(pos=self.index_to_pos(ix, iy), size=csize,
             #     source='data/round.png')
-
 
     def reposition(self, *args):
         self.rebuild_background()
