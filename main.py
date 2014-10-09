@@ -16,7 +16,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty, ObjectProperty,NumericProperty
-
+from kivy.core.audio import SoundLoader
 from kivy.uix.spinner import Spinner
 
 
@@ -51,10 +51,15 @@ Builder.load_string('''
                 size: [min(anchor.width, anchor.height)] * 2
                 on_size: battle_screen.reposition()
                 on_pos: battle_screen.reposition()
+                Label:
+                    font_size: 20
+                    center_y: battle_screen.center_y - battle_screen.height * 5 / 16
+                    center_x: battle_screen.center_x
+                    text: root.enermy.status
                 Image:
                     center_x: battle_screen.center_x
                     center_y: battle_screen.center_y
-                    source: 'data/Ghost_Light_2.png'
+                    source: 'data/Ghost_Light_2.png' if root.enermy.status == "ALIVE" else 'data/Ghost_Light_3.png'
                 Label:
                     font_size: 20
                     text: 'Monster Name'
@@ -72,11 +77,6 @@ Builder.load_string('''
                     center_y: battle_screen.center_y - battle_screen.height * 4 / 16
                     center_x: battle_screen.center_x
                     text: "AP: " + str(root.enermy.ap)
-                Label:
-                    font_size: 20
-                    center_y: battle_screen.center_y - battle_screen.height * 5 / 16
-                    center_x: battle_screen.center_x
-                    text: root.enermy.status
                 # Enermy
                 # Enermy:
                 #     id: enermy_right
@@ -123,9 +123,9 @@ Builder.load_string('''
                             on_size: battle_screen2.reposition()
                             on_pos: battle_screen2.reposition()
                             Image:
-                                center_x: battle_screen2.center_x
-                                center_y: battle_screen2.center_y
-                                source: 'data/Ghost_Light_1.png'
+                                center_x: self.parent.center_x
+                                center_y: self.parent.center_y
+                                source: 'data/Gall_5.png' if turnbutton.state == "down" else 'data/Gall_1.png'
                         # Player Status
                         BoxLayout:
                             id: player_status
@@ -136,12 +136,6 @@ Builder.load_string('''
                                 BorderImage:
                                     pos: self.pos
                                     size: self.size
-                            # Label:
-                            #     text: 'Status3'
-                            #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                            #     bold: True
-                            # Player:
-                            #     id: player_line
                             Label:
                                 font_size: 20
                                 pos: self.pos
@@ -176,45 +170,26 @@ Builder.load_string('''
                             BorderImage:
                                 pos: self.pos
                                 size: self.size
-                        # Label:
-                        #     text: 'Status2'
-                        #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                        #     bold: True
                         # UI
                         TurnButton:
-                            id: button
-                            text: "Turn"
+                            # text: "Turn"
+                            id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
                             on_press: root.on_main_button(self)
-
-
-# <EnermyScreen>:
-    # BoxLayout:
-    #     orientation: 'vertical'
-    #     canvas.before:
-    #         Color:
-    #             rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
-    #         BorderImage:
-    #             pos: self.pos
-    #             size: self.size
-    #             source: 'data/round.png'
-
-# Game2048:
-# id: game
-# on_size: self.reposition()
-# on_pos: self.reposition()
-
-    # player: player_line
-    # enermy: enermy_right
-
-
-        # Image:
-        #     center_x: root.width / 4
-        #     top: root.top - 100
-        #     source: 'f074.png'
-
-
+                            background_color: (0, 0, 0, 0)
+                            Image:
+                                center_x: self.parent.center_x
+                                center_y: self.parent.center_y
+                                source: 'data/Gall_5.png' if self.parent.state == "down" else 'data/Gall_1.png'
+                            Label:
+                                center_x: self.parent.center_x
+                                center_y: self.parent.center_y
+                                text: self.parent.name
+                                bold: True
+                                font_size: 40
+                            # background_normal: 'data/Gall_1.png'
+                            # background_down: 'data/Gall_5.png'
 
     # # Healing Spinner
     # Spinner:
@@ -223,22 +198,6 @@ Builder.load_string('''
     #     center_x: root.width / 4
     #     top: root.top - 400
     #     size: [100, 50]
-
-
-
-    # NextButton:
-    #     id: button
-    #     text: "Next"
-    #     center_x: root.width * 1 / 4
-    #     top: root.top - 400
-    #     on_press: root.load("orc")
-
-    # debug for size
-    # Label:
-    #     font_size: 10
-    #     center_x: root.width * 1 / 4
-    #     top: root.top - 400
-    #     text: "dir:" + str(dir(root))
 ''')
 
 from kivy.graphics import Color, BorderImage
@@ -304,7 +263,7 @@ STATUS_ALIVE = "ALIVE"
 STATUS_DEAD = "DEAD"
 
 class TurnButton(Button):
-    pass
+    name = StringProperty("Button")
 
 class User(object):
     hp = NumericProperty(0)
@@ -337,7 +296,6 @@ class Enermy(User, Widget):
         self.exp = enemy_info["exp"]
         self.gold = enemy_info["gold"]
         self.status = STATUS_ALIVE
-
 
 class Player(User, Widget):
     exp = NumericProperty(0)
@@ -373,6 +331,10 @@ def status_name(status):
         return "TURN"
     if status == GAME_STATUS_REWARD:
         return "REWARD"
+
+# 컨트롤 부분을 밖으로 빼기 위함
+from kivy.app import App
+app = None
 
 
 class TurnBattle(Widget):
@@ -412,6 +374,8 @@ class TurnBattle(Widget):
         elif self.status == GAME_STATUS_BATTLE:
             self._status_change(GAME_STATUS_TURN)
         elif self.status == GAME_STATUS_TURN:
+            # print dir(app.sound['swing'])
+            app.sound['swing'].play()
             # check for fight
             if self.player.hp == 0 or self.enermy.hp == 0:
                 return
@@ -423,31 +387,49 @@ class TurnBattle(Widget):
                 # if dead
                 self._status_change(GAME_STATUS_REWARD)
         elif self.status == GAME_STATUS_REWARD:
+            app.sound['coin'].play()
             self.player.get_reward(self.enermy)
             self._status_change(GAME_STATUS_SEARCH)
         else:
             raise
 
         # Text button name change
-        button.text = status_name(self.status)
-
-# 컨트롤 부분을 밖으로 빼기 위함
-from kivy.app import App
-app = None
+        button.name = status_name(self.status)
 
 class TurnApp(App):
+    sound = {}
+    music = None
+
     def build(self):
         global app
         app = self
 
         # 빌드시 아이콘 타이틀 지정
         # self.icon = 'memoIcon.png'
+
+        # start the background music:
+        self.music = SoundLoader.load('sound/8bitattempt.ogg')
+        self.music.bind(on_stop=self.sound_replay)
+        self.music.play()
+
+        # sound
+        self.sound['swing'] = SoundLoader.load('sound/battle/swing.ogg')
+        self.sound['coin'] = SoundLoader.load('sound/inventory/chainmail1.ogg')
+
+
         self.title = 'Kivy Test'
         game = TurnBattle()
         game.init()
         game.load("orc")
         Clock.schedule_interval(game.update, 1.0 / 60.0)
+
+
         return game
+
+    def sound_replay(self, instance):
+        if self.music.status != 'play':
+            self.music.play()
+
 
 
 if __name__ in ('__main__', '__android__'):
