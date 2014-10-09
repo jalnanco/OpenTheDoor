@@ -7,22 +7,19 @@ from kivy.uix.widget import Widget
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.image import Image
-
-from kivy.animation import Animation
-
+# from kivy.animation import Animation
 from kivy.lang import Builder
-from kivy.base import runTouchApp
+# from kivy.base import runTouchApp
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
-from kivy.properties import StringProperty, ObjectProperty,NumericProperty
-
-from kivy.uix.spinner import Spinner
-
-
+# from kivy.uix.floatlayout import FloatLayout
+# from kivy.uix.gridlayout import GridLayout
+from kivy.properties import StringProperty, NumericProperty
+# from kivy.uix.spinner import Spinner
 
 #!/usr/bin/kivy
-__version__ = '1.0'
+# __version__ = '1.0'
+
+from kivy import atlas
 
 # 여기에 kivy파일을 추가함 - 그림파일 불러오기용
 Builder.load_string('''
@@ -54,11 +51,13 @@ Builder.load_string('''
                 Image:
                     center_x: battle_screen.center_x
                     center_y: battle_screen.center_y
-                    source: 'data/Ghost_Light_2.png'
+                    source: 'monster.png'
+#                    source: 'data/Ghost_Light_2.png'
                 Label:
-                    font_size: 20
-                    text: 'Monster Name'
-                    color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+                    id: monster_label
+                    font_size: 30
+                    text: str(root.enermy.name)
+                    color: 0xff / 255., 0xff / 255., 0x00 / 255., 0.8
                     bold: True
                     center_y: battle_screen.center_y + battle_screen.height * 3 / 16
                     center_x: battle_screen.center_x
@@ -67,16 +66,19 @@ Builder.load_string('''
                     center_y: battle_screen.center_y - battle_screen.height * 3 / 16
                     center_x: battle_screen.center_x
                     text: "HP: " + str(root.enermy.hp)
+                    color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
                 Label:
                     font_size: 20
                     center_y: battle_screen.center_y - battle_screen.height * 4 / 16
                     center_x: battle_screen.center_x
                     text: "AP: " + str(root.enermy.ap)
+                    color: 0xff / 255., 0x00 / 255., 0x00 / 255., 1.
                 Label:
                     font_size: 20
                     center_y: battle_screen.center_y - battle_screen.height * 5 / 16
                     center_x: battle_screen.center_x
                     text: root.enermy.status
+                    color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
                 # Enermy
                 # Enermy:
                 #     id: enermy_right
@@ -97,7 +99,7 @@ Builder.load_string('''
                     orientation: 'vertical' if root.height > root.width else 'horizontal'
                     canvas.before:
                         Color:
-                            rgb: 0x33 / 255., 0xad / 255., 0xa0 / 255.
+                            rgb: 0xfa / 255., 0xf8 / 255., 0xef / 255.
                         BorderImage:
                             pos: self.pos
                             size: self.size
@@ -110,7 +112,7 @@ Builder.load_string('''
                         orientation: 'vertical'  # if root.height > root.width else 'horizontal'
                         canvas.before:
                             Color:
-                                rgb: 0x33 / 255., 0xcc / 255., 0xa0 / 255.
+                                rgb: 0xcc / 255., 0xc0 / 255., 0xb3 / 255.
                             BorderImage:
                                 pos: self.pos
                                 size: self.size
@@ -125,23 +127,17 @@ Builder.load_string('''
                             Image:
                                 center_x: battle_screen2.center_x
                                 center_y: battle_screen2.center_y
-                                source: 'data/Ghost_Light_1.png'
+                                source: 'character.png'
                         # Player Status
                         BoxLayout:
                             id: player_status
                             orientation: 'horizontal' if root.height > root.width else 'vertical'
                             canvas.before:
                                 Color:
-                                    rgb: 0xbb / 255., 0xdd / 255., 0xa0 / 255.
+                                    rgb: 0xcc / 255., 0xc0 / 255., 0xb3 / 255.
                                 BorderImage:
                                     pos: self.pos
                                     size: self.size
-                            # Label:
-                            #     text: 'Status3'
-                            #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                            #     bold: True
-                            # Player:
-                            #     id: player_line
                             Label:
                                 font_size: 20
                                 pos: self.pos
@@ -155,6 +151,7 @@ Builder.load_string('''
                             Label:
                                 font_size: 20
                                 pos: self.pos
+                                color: 0xff / 255., 0x00 / 255., 0x00 / 255., 1.
                                 text: "AP: "+ str(root.player.ap)
                             Label:
                                 font_size: 20
@@ -172,73 +169,25 @@ Builder.load_string('''
                         orientation: 'horizontal'
                         canvas.before:
                             Color:
-                                rgb: 0xdd / 255., 0xad / 255., 0xa0 / 255.
+                                rgb: 0xcc / 255., 0xc0 / 255., 0xb3 / 255.
                             BorderImage:
                                 pos: self.pos
                                 size: self.size
-                        # Label:
-                        #     text: 'Status2'
-                        #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                        #     bold: True
-                        # UI
                         TurnButton:
                             id: button
                             text: "Turn"
                             center_x: root.width * 3 / 4
                             top: root.top - 400
                             on_press: root.on_main_button(self)
-
-
-# <EnermyScreen>:
-    # BoxLayout:
-    #     orientation: 'vertical'
-    #     canvas.before:
-    #         Color:
-    #             rgb: 0xbb / 255., 0xad / 255., 0xa0 / 255.
-    #         BorderImage:
-    #             pos: self.pos
-    #             size: self.size
-    #             source: 'data/round.png'
-
-# Game2048:
-# id: game
-# on_size: self.reposition()
-# on_pos: self.reposition()
-
-    # player: player_line
-    # enermy: enermy_right
-
-
-        # Image:
-        #     center_x: root.width / 4
-        #     top: root.top - 100
-        #     source: 'f074.png'
-
-
-
-    # # Healing Spinner
-    # Spinner:
-    #     text: "auto heal"
-    #     values: ['10%','20%','30%']
-    #     center_x: root.width / 4
-    #     top: root.top - 400
-    #     size: [100, 50]
-
-
-
-    # NextButton:
-    #     id: button
-    #     text: "Next"
-    #     center_x: root.width * 1 / 4
-    #     top: root.top - 400
-    #     on_press: root.load("orc")
-
-    # debug for size
-    # Label:
-    #     font_size: 10
-    #     center_x: root.width * 1 / 4
-    #     top: root.top - 400
-    #     text: "dir:" + str(dir(root))
+                            background_color: (0.5, 0.5, 0.5, 0.8)
+                            # background_normal: 'sword.png'
+                            # allow_stretch: False
+                            # Image:
+                            #     source: 'sword.png'
+                            #     center_y: self.parent.center_y
+                            #     center_x: self.parent.center_x
+                            #     size: self.parent.size
+                            #     allow_stretch: True
 ''')
 
 from kivy.graphics import Color, BorderImage
@@ -258,20 +207,6 @@ class UserScreen(Widget):
 
     def reposition(self, *args):
         self.rebuild_background()
-
-        # # calculate the size of a number
-        # l = min(self.width, self.height)
-        # print l
-        # self.cube_padding = (l / 4.) / 8.
-        # print self.cube_padding
-        # self.cube_size = 10
-        # self.cube_padding = 100
-
-        # # cube_size = (l - (
-        # padding * 5)) / 4.
-        # self.cube_size = cube_size
-        # self.cube_padding = padding
-        # print self.cube_padding, self.cube_size, self.height
 
 
 class EnermyScreen(Widget):
@@ -327,6 +262,7 @@ class User(object):
 class Enermy(User, Widget):
     exp = NumericProperty(0)
     gold = NumericProperty(0)
+    name = StringProperty("")
 
     def __init__(self, **kwargs):
         super(User, self).__init__()
@@ -336,6 +272,7 @@ class Enermy(User, Widget):
         self.hp = enemy_info["hp"]
         self.exp = enemy_info["exp"]
         self.gold = enemy_info["gold"]
+        self.name = enemy_info["name"]
         self.status = STATUS_ALIVE
 
 
@@ -350,19 +287,21 @@ class Player(User, Widget):
         self.exp += enemy.exp
         self.gold += enemy.gold
 
-
-player_data = [20, 2000]
-enemy_data = {"orc":
-              {"hp":200,
-               "ap":10,
-               "exp":10,
-               "gold":100,},
-}
-
 GAME_STATUS_SEARCH = 0
 GAME_STATUS_BATTLE = 1
 GAME_STATUS_TURN = 2
 GAME_STATUS_REWARD = 3
+
+MONSTER_CAT = "YELLOW CAT"
+
+player_data = [20, 2000]
+enemy_data = {MONSTER_CAT:
+              {"hp":200,
+               "ap":10,
+               "exp":10,
+               "gold":100,
+               "name":MONSTER_CAT,},
+}
 
 def status_name(status):
     if status == GAME_STATUS_SEARCH:
@@ -396,18 +335,9 @@ class TurnBattle(Widget):
 
     def on_main_button(self, button):
         """ on_main_button turn """
-        # button animation (but not good)
-        # print self.player.hp
-        # ratio = self.player.hp / 10
-        # animation = Animation(size=(100 + 2 * ratio, 100 + 2 * ratio),
-        #                       center_x = self.width * 3 / 4,
-        #                       t='out_bounce')
-        # animation.start(button)
-
-
         # Turn
         if self.status == GAME_STATUS_SEARCH:
-            self.load("orc")
+            self.load(MONSTER_CAT)
             self._status_change(GAME_STATUS_BATTLE)
         elif self.status == GAME_STATUS_BATTLE:
             self._status_change(GAME_STATUS_TURN)
@@ -445,7 +375,7 @@ class TurnApp(App):
         self.title = 'Kivy Test'
         game = TurnBattle()
         game.init()
-        game.load("orc")
+        game.load(MONSTER_CAT)
         Clock.schedule_interval(game.update, 1.0 / 60.0)
         return game
 
