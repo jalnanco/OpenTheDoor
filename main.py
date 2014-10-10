@@ -61,10 +61,11 @@ Builder.load_string('''
                     center_y: battle_screen.center_y - battle_screen.height * 5 / 16
                     center_x: battle_screen.center_x
                     text: root.enermy.status
-                Image:
+                    font_name: 'data/kenpixel.ttf'
+                EnermyImage:
                     center_x: battle_screen.center_x
                     center_y: battle_screen.center_y
-                    source: 'data/spider_walk1.png' if turnbutton.state == "down" else 'data/spider.png' if root.enermy.status == "ALIVE" else 'data/spider_dead.png'
+                    source: self.get_enemy_image(root.status, root.enermy, turnbutton.state)
                 Label:
                     font_size: 20
                     text: 'Monster Name'
@@ -72,17 +73,30 @@ Builder.load_string('''
                     bold: True
                     center_y: battle_screen.center_y + battle_screen.height * 3 / 16
                     center_x: battle_screen.center_x
-                Label:
-                    font_size: 30
+                    font_name: 'data/kenpixel.ttf'
+
+                # 가능 하면 이미지 편집을 할껄..
+                Image:
+                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
+                    center_x: battle_screen.center_x - 36
+                    source: 'data/hud_heartEmpty.png' if root.enermy.hp < 1 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp/6 else 'data/hud_heartFull.png'
+                    size: 40, 40
+                Image:
                     center_y: battle_screen.center_y - battle_screen.height * 3 / 16
                     center_x: battle_screen.center_x
-                    text: "HP: " + str(root.enermy.hp)
+                    source: 'data/hud_heartEmpty.png' if root.enermy.hp <  root.enermy.maxhp * 3/6 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp* 4/6 else 'data/hud_heartFull.png'
+                    size: 40, 40
+                Image:
+                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
+                    center_x: battle_screen.center_x + 36
+                    source: 'data/hud_heartEmpty.png' if root.enermy.hp <  root.enermy.maxhp * 5/6 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp* 6/6 else 'data/hud_heartFull.png'
+                    size: 40, 40
                 Label:
                     font_size: 20
                     center_y: battle_screen.center_y - battle_screen.height * 4 / 16
                     center_x: battle_screen.center_x
                     text: "AP: " + str(root.enermy.ap)
-
+                    font_name: 'data/kenpixel.ttf'
 
         # 박스 2
         BoxLayout:
@@ -112,7 +126,7 @@ Builder.load_string('''
                         orientation: 'vertical'  # if root.height > root.width else 'horizontal'
                         canvas.before:
                             Color:
-                                rgb: 0x33 / 255., 0xcc / 255., 0xa0 / 255.
+                                rgb: 0xaa / 255., 0xcc / 255., 0xa0 / 255.
                             BorderImage:
                                 pos: self.pos
                                 size: self.size
@@ -137,34 +151,61 @@ Builder.load_string('''
                         BoxLayout:
                             id: player_status
                             orientation: 'horizontal' if root.height > root.width else 'vertical'
-                            canvas.before:
-                                Color:
-                                    rgb: 0xbb / 255., 0xdd / 255., 0xa0 / 255.
-                                BorderImage:
-                                    pos: self.pos
-                                    size: self.size
+                            # canvas.before:
+                            #     Color:
+                            #         rgb: 0xbb / 255., 0xdd / 255., 0xa0 / 255.
+                            #     BorderImage:
+                            #         pos: self.pos
+                            #         size: self.size
                             Label:
                                 font_size: 20
                                 pos: self.pos
                                 text: root.player.status
+                                font_name: 'data/kenpixel.ttf'
+
+                            # 가능 하면 이미지 편집을 할껄..
+                            HeartScreen:
+                                # orientation: 'horizontal'
+                                # size_hint: 1, 1
+                                # center_y: self.parent.center_y
+                                # center_x: self.parent.center_x
+                                Image:
+                                    center_y: self.parent.center_y
+                                    center_x: self.parent.center_x - 36
+                                    source: 'data/hud_heartEmpty.png' if root.player.hp < 1 else 'data/hud_heartHalf.png' if root.player.hp <  root.player.maxhp/6 else 'data/hud_heartFull.png'
+                                    size: 40, 40
+                                Image:
+                                    center_y: self.parent.center_y
+                                    center_x: self.parent.center_x
+                                    source: 'data/hud_heartEmpty.png' if root.player.hp <  root.player.maxhp * 3/6 else 'data/hud_heartHalf.png' if root.player.hp <  root.player.maxhp* 4/6 else 'data/hud_heartFull.png'
+                                    size: 40, 40
+                                Image:
+                                    center_y: self.parent.center_y
+                                    center_x: self.parent.center_x + 36
+                                    source: 'data/hud_heartEmpty.png' if root.player.hp <  root.player.maxhp * 5/6 else 'data/hud_heartHalf.png' if root.player.hp <  root.player.maxhp* 6/6 else 'data/hud_heartFull.png'
+                                    size: 40, 40
                             Label:
                                 font_size: 20
                                 pos: self.pos
                                 # center_y: player_status.center_y
                                 # center_x: player_status.center_x
-                                text: "HP: "+ str(root.player.hp)
+                                text: "LV: "+ str(root.player.lv)
+                                font_name: 'data/kenpixel.ttf'
                             Label:
                                 font_size: 20
                                 pos: self.pos
                                 text: "AP: "+ str(root.player.ap)
+                                font_name: 'data/kenpixel.ttf'
                             Label:
                                 font_size: 20
                                 pos: self.pos
                                 text: "exp: " + str(root.player.exp)
+                                font_name: 'data/kenpixel.ttf'
                             Label:
                                 font_size: 20
                                 pos: self.pos
                                 text: "gold: " + str(root.player.gold)
+                                font_name: 'data/kenpixel.ttf'
 
                     # 박스 2 - 정보표시 2
                     BoxLayout:
@@ -188,13 +229,14 @@ Builder.load_string('''
                             Image:
                                 center_x: self.parent.center_x
                                 center_y: self.parent.center_y
-                                source: 'data/Gall_5.png' if self.parent.state == "down" else 'data/Gall_1.png'
+                                source: root.get_main_button_image(turnbutton.state)
                             Label:
                                 center_x: self.parent.center_x
-                                center_y: self.parent.center_y
+                                center_y: self.parent.center_y - self.parent.height * 1/8
                                 text: self.parent.name
                                 bold: True
-                                font_size: 40
+                                font_size: 30
+                                font_name: 'data/kenpixel.ttf'
                             # background_normal: 'data/Gall_1.png'
                             # background_down: 'data/Gall_5.png'
 
@@ -226,17 +268,47 @@ class Repositon(object):
         self.rebuild_background()
         self.size = [min(screen.width, screen.height)] * 2
 
-# # Main Screen
+# Main Screen
 class EnermyScreen(Widget, Repositon):
     pass
 
+class HeartScreen(Widget, Repositon):
+    pass
+
+GAME_STATUS_SEARCH = 0
+GAME_STATUS_BATTLE = 1
+GAME_STATUS_TURN = 2
+GAME_STATUS_REWARD = 3
+
+
+# EnermyImage
+class EnermyImage(Image):
+    def get_enemy_image(self, status, enermy, state):
+        if status == GAME_STATUS_SEARCH:
+            return 'data/rpgTile220.png'  if state=="down" else 'data/rpgTile205.png'
+        elif status == GAME_STATUS_REWARD:
+            return 'data/coinGold.png'
+        elif enermy.name == "orc":
+            return  'data/spider_dead.png' if enermy.status == "DEAD" else 'data/spider_walk1.png' if state=="down" else 'data/spider.png'
+
+# EnermyHpImage
+# class EnermyHpImage(Image):
+#     def get_enemy_hp(self, hp):
+#         return 
+
+        # if status == GAME_STATUS_SEARCH:
+        #     return 'data/rpgTile220.png'  if state=="down" else 'data/rpgTile205.png'
+        # elif status == GAME_STATUS_REWARD:
+        #     return 'data/coinGold.png'
+        # elif enermy.name == "orc":
+        #     return  'data/spider_dead.png' if enermy.status == "DEAD" else 'data/spider_walk1.png' if state=="down" else 'data/spider.png'
 # User Screen
 class UserScreen(Widget, Repositon):
     score = NumericProperty(0)
 
 # Turn Button
 class TurnButton(Button):
-    name = StringProperty("NONON")
+    name = StringProperty("START")
 
 
 class MainLayout(AnchorLayout):
@@ -250,8 +322,10 @@ STATUS_DEAD = "DEAD"
 
 class User(object):
     hp = NumericProperty(0)
+    maxhp = NumericProperty(0)
     ap = NumericProperty(0)
     status = StringProperty(STATUS_ALIVE)
+    lv = NumericProperty(0)
 
     def up_score(self, number):
         self.hp += 1
@@ -269,6 +343,7 @@ class User(object):
 class Enermy(User, Widget):
     exp = NumericProperty(0)
     gold = NumericProperty(0)
+    name = StringProperty(0)
 
     def __init__(self, **kwargs):
         super(User, self).__init__()
@@ -279,6 +354,8 @@ class Enermy(User, Widget):
         self.exp = enemy_info["exp"]
         self.gold = enemy_info["gold"]
         self.status = STATUS_ALIVE
+        self.name = enemy_info["name"]
+        self.maxhp = enemy_info["maxhp"]
 
 class Player(User, Widget):
     exp = NumericProperty(0)
@@ -292,18 +369,16 @@ class Player(User, Widget):
         self.gold += enemy.gold
 
 
-player_data = [20, 2000]
-enemy_data = {"orc":
-              {"hp":200,
-               "ap":10,
-               "exp":10,
-               "gold":100,},
+player_data = [1, 1, 100, 100]
+enemy_data = {"orc":{
+    "maxhp":20,
+    "hp":20,
+    "ap":1,
+    "exp":1,
+    "gold":1,
+    "name":"orc"},
 }
 
-GAME_STATUS_SEARCH = 0
-GAME_STATUS_BATTLE = 1
-GAME_STATUS_TURN = 2
-GAME_STATUS_REWARD = 3
 
 def status_name(status):
     if status == GAME_STATUS_SEARCH:
@@ -329,14 +404,30 @@ class TurnBattle(Widget):
         pass
 
     def init(self):
-        self.player.ap = player_data[0]
-        self.player.hp = player_data[1]
+        self.player.lv = player_data[0]
+        self.player.ap = player_data[1]
+        self.player.hp = player_data[2]
+        self.player.maxhp = player_data[3]
 
     def load(self, enemy_name):
         self.enermy.load(enemy_data[enemy_name])
 
     def _status_change(self, status):
         self.status = status
+
+    def get_main_button_image(self, state):
+        if self.status == GAME_STATUS_SEARCH:
+            return 'data/shadedDark26.png' if state == "down" else 'data/shadedLight26.png'
+        elif self.status == GAME_STATUS_BATTLE:
+            return 'data/shadedDark48.png' if state == "down" else 'data/shadedLight48.png'
+        elif self.status == GAME_STATUS_TURN:
+            return 'data/shadedDark49.png' if state == "down" else 'data/shadedLight49.png'
+        elif self.status == GAME_STATUS_REWARD:
+            return 'data/shadedDark28.png' if state == "down" else 'data/shadedLight28.png'
+        else:
+            raise
+
+
 
     def on_main_button(self, button, main_screen):
         """ on_main_button turn """
@@ -391,7 +482,7 @@ class TurnApp(App):
         self.sound['coin'] = SoundLoader.load('sound/inventory/chainmail1.ogg')
 
 
-        self.title = 'Kivy Test'
+        self.title = 'One RPG'
         game = TurnBattle()
         game.init()
         game.load("orc")
