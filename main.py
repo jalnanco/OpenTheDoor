@@ -43,43 +43,13 @@ Builder.load_string('''
                 pos: self.pos
                 size: self.size
         # 앵커 1 - 메인 전투화면
-        AnchorLayout:
-            id: anchor
-            EnermyScreen:
-                id: battle_screen
-                size_hint: None, None
-                size: [min(anchor.width, anchor.height)] * 2
-                on_size: battle_screen.reposition()
-                on_pos: battle_screen.reposition()
-                Label:
-                    font_size: 20
-                    center_y: battle_screen.center_y - battle_screen.height * 5 / 16
-                    center_x: battle_screen.center_x
-                    text: root.enermy.status
-                Image:
-                    center_x: battle_screen.center_x
-                    center_y: battle_screen.center_y
-                    source: 'data/Ghost_Light_2.png' if root.enermy.status == "ALIVE" else 'data/Ghost_Light_3.png'
-                Label:
-                    font_size: 20
-                    text: 'Monster Name'
-                    color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                    bold: True
-                    center_y: battle_screen.center_y + battle_screen.height * 3 / 16
-                    center_x: battle_screen.center_x
-                Label:
-                    font_size: 30
-                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
-                    center_x: battle_screen.center_x
-                    text: "HP: " + str(root.enermy.hp)
-                Label:
-                    font_size: 20
-                    center_y: battle_screen.center_y - battle_screen.height * 4 / 16
-                    center_x: battle_screen.center_x
-                    text: "AP: " + str(root.enermy.ap)
-                # Enermy
-                # Enermy:
-                #     id: enermy_right
+        MainLayout:
+            id: main_screen
+            # EnermyScreen
+            # size: self.get_size(self.parent)
+            size: [min(self.parent.width, self.parent.height)] * 2
+            on_size: self.reposition()
+            on_pos: self.reposition()
 
 
         # 박스 2
@@ -176,7 +146,7 @@ Builder.load_string('''
                             id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
-                            on_press: root.on_main_button(self)
+                            on_press: root.on_main_button(self, main_screen)
                             background_color: (0, 0, 0, 0)
                             Image:
                                 center_x: self.parent.center_x
@@ -198,9 +168,117 @@ Builder.load_string('''
     #     center_x: root.width / 4
     #     top: root.top - 400
     #     size: [100, 50]
+# EnermyScreen
+<EnermyScreen>
+    size_hint: None, None
+    # size: [min(self.parent.width, self.parent.height)] * 2
+    on_size: self.reposition()
+    on_pos: self.reposition()
+    # Label:
+    #     font_size: 20
+    #     center_y: self.parent.center_y - self.parent.height * 5 / 16
+    #     center_x: self.parent.center_x
+    #     text: self.parent.status
+    # Image:
+    #     center_x: self.parent.center_x
+    #     center_y: self.parent.center_y
+    #     source: 'data/Ghost_Light_2.png' if self.parent.status == "ALIVE" else 'data/Ghost_Light_3.png'
+    # Label:
+    #     font_size: 20
+    #     text: 'Monster Name'
+    #     color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
+    #     bold: True
+    #     center_y: self.parent.center_y + self.parent.height * 3 / 16
+    #     center_x: self.parent.center_x
+    # Label:
+    #     font_size: 30
+    #     center_y: self.parent.center_y - self.parent.height * 3 / 16
+    #     center_x: self.parent.center_x
+    #     text: "HP: " + str(self.parent.hp)
+    # Label:
+    #     font_size: 20
+    #     center_y: self.parent.center_y - self.parent.height * 4 / 16
+    #     center_x: self.parent.center_x
+    #     text: "AP: " + str(self.parent.ap)
+
+
+<MapScreen>
+    size_hint: None, None
+    # size: [10, 10]
+    # size: self.get_size() # [min(self.parent.width, self.parent.height)] * 2
+    on_size: self.reposition()
+    on_pos: self.reposition()
+
 ''')
 
 from kivy.graphics import Color, BorderImage
+from kivy.uix.anchorlayout import AnchorLayout
+
+
+class Repositon(object):
+    def rebuild_background(self):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(0xbb / 255., 0xad / 255., 0xa0 / 255.)
+            BorderImage(pos=self.pos, size=self.size)
+            Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
+
+    def reposition(self, *args):
+        self.rebuild_background()
+
+    def repostion_with_size(self, screen):
+        self.rebuild_background()
+        self.size = [min(screen.width, screen.height)] * 2
+
+class EnermyScreen(Widget):
+    cube_size = NumericProperty(10)
+    cube_padding = NumericProperty(10)
+    score = NumericProperty(0)
+    pass
+class MapScreen(Widget, Repositon):
+    cube_size = NumericProperty(10)
+    cube_padding = NumericProperty(10)
+    score = NumericProperty(0)
+    screen = None
+
+    def __init__(self):
+        super(MapScreen, self).__init__()
+        # self.screen = screen
+
+class ItemScreen(Widget):
+    cube_size = NumericProperty(10)
+    cube_padding = NumericProperty(10)
+    score = NumericProperty(0)
+    pass
+class InfoScreen(Widget):
+    cube_size = NumericProperty(10)
+    cube_padding = NumericProperty(10)
+    score = NumericProperty(0)
+    pass
+
+
+#메인 화면 스테이터스
+MAIN_ENERMY_STATUS = 0
+MAIN_MAP_STATUS = 1
+MAIN_ITEM_STATUS = 2
+MAIN_INFO_STATUS = 3
+
+class MainLayout(AnchorLayout):
+
+    def __init__(self, **kwargs):
+        super(MainLayout, self).__init__()
+        self.enermy_screen = EnermyScreen()
+        self.map_screen = MapScreen()
+        self.item_screen = ItemScreen()
+        self.info_screen = InfoScreen()
+        # self.add_widget(self.enermy_screen)
+
+    def change(self, main_screen):
+        self.clear_widgets()
+        self.add_widget(self.map_screen)
+
+    def reposition(self):
+        self.map_screen.repostion_with_size(self)
 
 class UserScreen(Widget):
     cube_size = NumericProperty(5)
@@ -218,22 +296,7 @@ class UserScreen(Widget):
     def reposition(self, *args):
         self.rebuild_background()
 
-        # # calculate the size of a number
-        # l = min(self.width, self.height)
-        # print l
-        # self.cube_padding = (l / 4.) / 8.
-        # print self.cube_padding
-        # self.cube_size = 10
-        # self.cube_padding = 100
-
-        # # cube_size = (l - (
-        # padding * 5)) / 4.
-        # self.cube_size = cube_size
-        # self.cube_padding = padding
-        # print self.cube_padding, self.cube_size, self.height
-
-
-class EnermyScreen(Widget):
+class ItemScreen(Widget):
     cube_size = NumericProperty(10)
     cube_padding = NumericProperty(10)
     score = NumericProperty(0)
@@ -241,9 +304,9 @@ class EnermyScreen(Widget):
     def rebuild_background(self):
         self.canvas.before.clear()
         with self.canvas.before:
-            Color(0xbb / 255., 0xad / 255., 0xa0 / 255.)
+            Color(0xbb / 255., 0xff / 255., 0xa0 / 255.)
             BorderImage(pos=self.pos, size=self.size)
-            Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
+            Color(0xcc / 255., 0xff / 255., 0xb3 / 255.)
             csize = self.cube_size, self.cube_size
 
     def reposition(self, *args):
@@ -255,7 +318,6 @@ class EnermyScreen(Widget):
         cube_size = (l - (padding * 5)) / 4.
         self.cube_size = cube_size
         self.cube_padding = padding
-
 
 
 
@@ -336,7 +398,6 @@ def status_name(status):
 from kivy.app import App
 app = None
 
-
 class TurnBattle(Widget):
     player = Player()
     enermy = Enermy()
@@ -356,7 +417,7 @@ class TurnBattle(Widget):
     def _status_change(self, status):
         self.status = status
 
-    def on_main_button(self, button):
+    def on_main_button(self, button, main_screen):
         """ on_main_button turn """
         # button animation (but not good)
         # print self.player.hp
@@ -365,6 +426,7 @@ class TurnBattle(Widget):
         #                       center_x = self.width * 3 / 4,
         #                       t='out_bounce')
         # animation.start(button)
+        main_screen.change(main_screen)
 
 
         # Turn
