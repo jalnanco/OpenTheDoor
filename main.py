@@ -19,8 +19,6 @@ from kivy.properties import StringProperty, ObjectProperty,NumericProperty
 from kivy.core.audio import SoundLoader
 from kivy.uix.spinner import Spinner
 
-
-
 #!/usr/bin/kivy
 __version__ = '1.0'
 
@@ -45,58 +43,74 @@ Builder.load_string('''
         # 앵커 1 - 메인 전투화면
         MainLayout:
             id: main_screen
-            # size: self.get_size(self.parent)
-            # size: [min(self.parent.width, self.parent.height)] * 2
-            # on_size: self.reposition()
-            # on_pos: self.reposition()
-
             EnermyScreen:
-                id: battle_screen
                 size_hint: None, None
                 size: [min(main_screen.width, main_screen.height)] * 2
-                on_size: battle_screen.reposition()
-                on_pos: battle_screen.reposition()
+                on_size: self.reposition()
+                on_pos: self.reposition()
                 Label:
                     font_size: 20
-                    center_y: battle_screen.center_y - battle_screen.height * 5 / 16
-                    center_x: battle_screen.center_x
+                    text: str(root.enermy.name)
+                    bold: True
+                    center_y: self.parent.center_y + self.parent.height * 3 / 16
+                    center_x: self.parent.center_x
+                    font_name: 'data/kenpixel.ttf'
+                Label:
+                    id: dmg
+                    font_size: 15
+                    center_y: self.parent.center_y - self.parent.height
+                    center_x: self.parent.center_x
+                    text: "-" + str(root.player.ap)
+                    font_name: 'data/kenpixel.ttf'
+                    color: (1, 0, 0, 1)
+                    bold: True
+                Label:
+                    font_size: 20
+                    center_y: self.parent.center_y - self.parent.height * 5 / 16
+                    center_x: self.parent.center_x
                     text: root.enermy.status
                     font_name: 'data/kenpixel.ttf'
+                Image:
+                    center_x: self.parent.center_x - 32
+                    center_y: self.parent.center_y - 15
+                    source: 'data/rpgTile056.png'
+                Image:
+                    center_x: self.parent.center_x + 32
+                    center_y: self.parent.center_y - 15
+                    source: 'data/rpgTile056.png'
                 EnermyImage:
-                    center_x: battle_screen.center_x
-                    center_y: battle_screen.center_y
+                    id: enermy_screen
+                    center_x: self.parent.center_x
+                    center_y: self.parent.center_y
                     source: self.get_enemy_image(root.status, root.enermy, turnbutton.state)
-                Label:
-                    font_size: 20
-                    text: 'Monster Name'
-                    color: 0xee / 255., 0xe4 / 255., 0xda / 255., 1.
-                    bold: True
-                    center_y: battle_screen.center_y + battle_screen.height * 3 / 16
-                    center_x: battle_screen.center_x
-                    font_name: 'data/kenpixel.ttf'
-
                 # 가능 하면 이미지 편집을 할껄..
                 Image:
-                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
-                    center_x: battle_screen.center_x - 36
+                    center_y: self.parent.center_y - self.parent.height * 3 / 16
+                    center_x: self.parent.center_x - 36
                     source: 'data/hud_heartEmpty.png' if root.enermy.hp < 1 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp/6 else 'data/hud_heartFull.png'
                     size: 40, 40
                 Image:
-                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
-                    center_x: battle_screen.center_x
+                    center_y: self.parent.center_y - self.parent.height * 3 / 16
+                    center_x: self.parent.center_x
                     source: 'data/hud_heartEmpty.png' if root.enermy.hp <  root.enermy.maxhp * 3/6 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp* 4/6 else 'data/hud_heartFull.png'
                     size: 40, 40
                 Image:
-                    center_y: battle_screen.center_y - battle_screen.height * 3 / 16
-                    center_x: battle_screen.center_x + 36
+                    center_y: self.parent.center_y - self.parent.height * 3 / 16
+                    center_x: self.parent.center_x + 36
                     source: 'data/hud_heartEmpty.png' if root.enermy.hp <  root.enermy.maxhp * 5/6 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp* 6/6 else 'data/hud_heartFull.png'
                     size: 40, 40
                 Label:
                     font_size: 20
-                    center_y: battle_screen.center_y - battle_screen.height * 4 / 16
-                    center_x: battle_screen.center_x
+                    center_y: self.parent.center_y - self.parent.height * 4 / 16
+                    center_x: self.parent.center_x
                     text: "AP: " + str(root.enermy.ap)
                     font_name: 'data/kenpixel.ttf'
+                Image:
+                    id: reward
+                    opacity: 0
+                #     center_x: self.parent.center_x
+                #     center_y: self.parent.center_y
+                #     source: 'data/coinGold.png'
 
         # 박스 2
         BoxLayout:
@@ -138,25 +152,31 @@ Builder.load_string('''
                             size: [min(user_screen.width, user_screen.height)] * 2
                             on_size: battle_screen2.reposition()
                             on_pos: battle_screen2.reposition()
+                            # Image:
+                            #     center_x: self.parent.center_x - 64
+                            #     center_y: self.parent.center_y
+                            #     source: 'data/rpgTile056.png'
+                            # Image:
+                            #     center_x: self.parent.center_x - 64
+                            #     center_y: self.parent.center_y
+                            #     source: 'data/rpgTile056.png'
+                            Image:
+                                center_x: self.parent.center_x - 32
+                                center_y: self.parent.center_y
+                                source: 'data/rpgTile056.png'
+                            Image:
+                                center_x: self.parent.center_x + 32
+                                center_y: self.parent.center_y
+                                source: 'data/rpgTile056.png'
                             Image:
                                 center_x: self.parent.center_x
                                 center_y: self.parent.center_y
-                                #  atlas test
-                                # source: 'atlas://data/myatlas/dungeontile'
                                 source: 'data/Gall_5.png' if turnbutton.state == "down" else 'data/Gall_1.png'
-                                # allow_stretch: True
-                                # width: 100
-                                # height: 100
+
                         # Player Status
                         BoxLayout:
                             id: player_status
                             orientation: 'horizontal' if root.height > root.width else 'vertical'
-                            # canvas.before:
-                            #     Color:
-                            #         rgb: 0xbb / 255., 0xdd / 255., 0xa0 / 255.
-                            #     BorderImage:
-                            #         pos: self.pos
-                            #         size: self.size
                             Label:
                                 font_size: 20
                                 pos: self.pos
@@ -165,10 +185,6 @@ Builder.load_string('''
 
                             # 가능 하면 이미지 편집을 할껄..
                             HeartScreen:
-                                # orientation: 'horizontal'
-                                # size_hint: 1, 1
-                                # center_y: self.parent.center_y
-                                # center_x: self.parent.center_x
                                 Image:
                                     center_y: self.parent.center_y
                                     center_x: self.parent.center_x - 36
@@ -187,8 +203,6 @@ Builder.load_string('''
                             Label:
                                 font_size: 20
                                 pos: self.pos
-                                # center_y: player_status.center_y
-                                # center_x: player_status.center_x
                                 text: "LV: "+ str(root.player.lv)
                                 font_name: 'data/kenpixel.ttf'
                             Label:
@@ -224,21 +238,19 @@ Builder.load_string('''
                             id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
-                            on_press: root.on_main_button(self, main_screen)
+                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, reward)
                             background_color: (0, 0, 0, 0)
                             Image:
                                 center_x: self.parent.center_x
                                 center_y: self.parent.center_y
-                                source: root.get_main_button_image(turnbutton.state)
+                                source: root.get_main_button_image(self.parent)
                             Label:
                                 center_x: self.parent.center_x
-                                center_y: self.parent.center_y - self.parent.height * 1/8
+                                center_y:  self.parent.center_y - self.parent.height * 3/8 if root.height > root.width else self.parent.center_y - self.parent.height * 1/8
                                 text: self.parent.name
                                 bold: True
                                 font_size: 30
                                 font_name: 'data/kenpixel.ttf'
-                            # background_normal: 'data/Gall_1.png'
-                            # background_down: 'data/Gall_5.png'
 
     # # Healing Spinner
     # Spinner:
@@ -287,21 +299,11 @@ class EnermyImage(Image):
         if status == GAME_STATUS_SEARCH:
             return 'data/rpgTile220.png'  if state=="down" else 'data/rpgTile205.png'
         elif status == GAME_STATUS_REWARD:
-            return 'data/coinGold.png'
-        elif enermy.name == "orc":
-            return  'data/spider_dead.png' if enermy.status == "DEAD" else 'data/spider_walk1.png' if state=="down" else 'data/spider.png'
+            return 'data/ghost_dead.png'
+        elif enermy.name == "Ghost":
+            return 'data/ghost_normal.png' if state=="down" else 'data/ghost.png'
+            # return 'data/coinGold.png'
 
-# EnermyHpImage
-# class EnermyHpImage(Image):
-#     def get_enemy_hp(self, hp):
-#         return 
-
-        # if status == GAME_STATUS_SEARCH:
-        #     return 'data/rpgTile220.png'  if state=="down" else 'data/rpgTile205.png'
-        # elif status == GAME_STATUS_REWARD:
-        #     return 'data/coinGold.png'
-        # elif enermy.name == "orc":
-        #     return  'data/spider_dead.png' if enermy.status == "DEAD" else 'data/spider_walk1.png' if state=="down" else 'data/spider.png'
 # User Screen
 class UserScreen(Widget, Repositon):
     score = NumericProperty(0)
@@ -310,11 +312,9 @@ class UserScreen(Widget, Repositon):
 class TurnButton(Button):
     name = StringProperty("START")
 
-
 class MainLayout(AnchorLayout):
     def __init__(self, **kwargs):
         super(MainLayout, self).__init__()
-
 
 STATUS_ALIVE = "ALIVE"
 STATUS_DEAD = "DEAD"
@@ -368,15 +368,22 @@ class Player(User, Widget):
         self.exp += enemy.exp
         self.gold += enemy.gold
 
+    def save(self):
+        return self.lv, self.ap, self.hp, self.maxhp
+
+    def load(self, data):
+        self.lv, self.ap, self.hp, self.maxhp = data
+
+
 
 player_data = [1, 1, 100, 100]
-enemy_data = {"orc":{
+enemy_data = {"Ghost":{
     "maxhp":20,
     "hp":20,
     "ap":1,
     "exp":1,
     "gold":1,
-    "name":"orc"},
+    "name":"Ghost"},
 }
 
 
@@ -399,7 +406,6 @@ class TurnBattle(Widget):
     enermy = Enermy()
     status = GAME_STATUS_SEARCH
 
-    # for animation
     def update(self, dt):
         pass
 
@@ -415,7 +421,9 @@ class TurnBattle(Widget):
     def _status_change(self, status):
         self.status = status
 
-    def get_main_button_image(self, state):
+    def get_main_button_image(self, button):
+        state = button.state
+
         if self.status == GAME_STATUS_SEARCH:
             return 'data/shadedDark26.png' if state == "down" else 'data/shadedLight26.png'
         elif self.status == GAME_STATUS_BATTLE:
@@ -429,18 +437,36 @@ class TurnBattle(Widget):
 
 
 
-    def on_main_button(self, button, main_screen):
+    def on_main_button(self, button, main_screen, enemy_screen, dmg, reward):
         """ on_main_button turn """
 
         # Turn
         if self.status == GAME_STATUS_SEARCH:
-            self.load("orc")
+            self.load("Ghost")
             self._status_change(GAME_STATUS_BATTLE)
         elif self.status == GAME_STATUS_BATTLE:
             self._status_change(GAME_STATUS_TURN)
         elif self.status == GAME_STATUS_TURN:
             # print dir(app.sound['swing'])
             app.sound['swing'].play()
+            left = Animation(center_x=enemy_screen.parent.center_x-10, duration=.2)
+            right = Animation(center_x=enemy_screen.parent.center_x, duration=.2)
+            anim = left + right
+            if anim:
+                anim.stop(self)
+            anim.start(enemy_screen)
+
+            # damage
+            dmg_anim = Animation(center_y=dmg.parent.center_y+60, duration=.2, t='out_circ')
+            dmg_anim &= Animation(opacity=0, duration=.4)
+
+            if dmg_anim:
+                dmg.center_y = dmg.parent.center_y
+                dmg.opacity=1
+                dmg_anim.stop(self)
+            dmg_anim.start(dmg)
+
+
             # check for fight
             if self.player.hp == 0 or self.enermy.hp == 0:
                 return
@@ -454,28 +480,40 @@ class TurnBattle(Widget):
         elif self.status == GAME_STATUS_REWARD:
             app.sound['coin'].play()
             self.player.get_reward(self.enermy)
+
+            # print 111111111
+
+            # # reward
+            # reward.center_y = reward.parent.center_y
+            # reward.opacity=0
+            # reward_anim = Animation(center_y=reward.parent.center_y+60, duration=1.0, t='out_circ')
+            # reward_anim.bind(on_complete=self.wow)
+            # # reward_anim &= Animation(opacity=1, duration=3.0)
+            # reward_anim.start(reward)
+
             self._status_change(GAME_STATUS_SEARCH)
+
         else:
             raise
 
         # Text button name change
         button.name = status_name(self.status)
+    def wow(self):
+        print 11111111
+
 
 class TurnApp(App):
     sound = {}
     music = None
-
     def build(self):
         global app
         app = self
 
-        # 빌드시 아이콘 타이틀 지정
-        # self.icon = 'memoIcon.png'
-
+        # background sound
         # start the background music:
-        self.music = SoundLoader.load('sound/8bitattempt.ogg')
-        self.music.bind(on_stop=self.sound_replay)
-        self.music.play()
+        # self.music = SoundLoader.load('sound/8bitattempt.ogg')
+        # self.music.bind(on_stop=self.sound_replay)
+        # self.music.play()
 
         # sound
         self.sound['swing'] = SoundLoader.load('sound/battle/swing.ogg')
@@ -483,15 +521,20 @@ class TurnApp(App):
 
 
         self.title = 'One RPG'
-        game = TurnBattle()
-        game.init()
-        game.load("orc")
-        Clock.schedule_interval(game.update, 1.0 / 60.0)
-        return game
+        self.game = TurnBattle()
+        self.game.init()
+        self.game.load("Ghost")
+        Clock.schedule_interval(self.game.update, 1.0 / 60.0)
+        return self.game
 
     def sound_replay(self, instance):
         if self.music.status != 'play':
             self.music.play()
 
+
+    def on_pause(self):
+        return True
+
 if __name__ in ('__main__', '__android__'):
     TurnApp().run()
+
