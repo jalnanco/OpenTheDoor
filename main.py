@@ -217,7 +217,7 @@ Builder.load_string('''
                             Label:
                                 font_size: 20
                                 pos: self.pos
-                                text: root.player.game_status
+                                text: root.player.game_status if root.player.game_status != 'DEAD' else "game over!"
                                 font_name: 'data/kenpixel.ttf'
 
                             # 가능 하면 이미지 편집을 할껄..
@@ -275,7 +275,7 @@ Builder.load_string('''
                             id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
-                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, reward)
+                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, reward, floor_spinner.text)
                             background_color: (0, 0, 0, 0)
                             Image:
                                 center_x: self.parent.center_x
@@ -291,17 +291,17 @@ Builder.load_string('''
 
     # Healing Spinner
     Spinner:
-        text: "auto heal"
-        values: ['10%','20%','30%']
-        center_x: root.width / 4
-        top: root.top - 400
+        id: floor_spinner
+        text: '1F'
+        values: ['1F','2F','3F','4F','5F']
+        # center_x: root.width / 4
+        # top: root.top - 400
         size: [100, 50]
 
 ''')
 
 from kivy.graphics import Color, BorderImage
 from kivy.uix.anchorlayout import AnchorLayout
-
 
 class Repositon(object):
     def rebuild_background(self):
@@ -414,6 +414,13 @@ class Player(User, Widget):
 
     def get_reward(self, enemy):
         self.exp += enemy.exp
+
+        if self.exp >= 5*(self.lv/2)*(1+self.lv):
+            self.lv += 1
+            self.exp = 0
+            self.maxhp = self.lv * self.maxhp
+            self.hp = self.maxhp
+            self.ap = self.ap * 2
         self.gold += enemy.gold
 
     def save(self):
@@ -424,7 +431,7 @@ class Player(User, Widget):
 
 
 
-player_data = [1, 1, 100, 100]
+player_data = [1, 1, 1000, 1000]
 
 
 
@@ -480,11 +487,14 @@ class TurnBattle(Widget):
 
 
 
-    def on_main_button(self, button, main_screen, enemy_screen, dmg, reward):
+    def on_main_button(self, button, main_screen, enemy_screen, dmg, reward, floor):
         """ on_main_button turn """
 
         # Turn
         if self.game_status == GAME_STATUS_OPEN:
+            # text code
+            self.door.current_door = floor
+
             self.load_enermy()
             self._status_change(GAME_STATUS_BATTLE)
         elif self.game_status == GAME_STATUS_BATTLE:
