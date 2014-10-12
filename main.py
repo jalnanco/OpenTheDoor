@@ -21,6 +21,17 @@ from kivy.uix.spinner import Spinner
 
 from doormanager import DoorManager
 
+from kivy.uix.effectwidget import (# MonochromeEffect,
+                                   # InvertEffect,
+                                   # ScanlinesEffect,
+                                   # ChannelMixEffect,
+                                   # ScanlinesEffect,
+                                   # FXAAEffect,
+                                   # PixelateEffect,
+                                   # HorizontalBlurEffect,
+                                   VerticalBlurEffect
+)
+
 #!/usr/bin/kivy
 __version__ = '1.0'
 
@@ -42,7 +53,8 @@ Builder.load_string('''
             Rectangle:
                 pos: self.pos
                 size: self.size
-        # 앵커 1 - 메인 전투화면
+
+        # 메인 전투화면
         MainLayout:
             id: main_screen
             DoorScreen:
@@ -50,31 +62,48 @@ Builder.load_string('''
                 size: [min(main_screen.width, main_screen.height)] * 2
                 on_size: self.reposition()
                 on_pos: self.reposition()
-                # BackGroundImage
+
+                # background
                 Image:
                     center_x: self.parent.center_x - 32
-                    center_y: self.parent.center_y - 15
-                    source: 'data/rpgTile057.png'
-                Image:
-                    center_x: self.parent.center_x + 32
-                    center_y: self.parent.center_y - 15
-                    source: 'data/rpgTile059.png'
-                Image:
-                    center_x: self.parent.center_x - 32
-                    center_y: self.parent.center_y + 49
-                    source: 'data/rpgTile078.png'
+                    center_y: self.parent.center_y - 38
+                    source: 'data/slice03_03.png'
                     # opacity: 0.5
                 Image:
                     center_x: self.parent.center_x + 32
-                    center_y: self.parent.center_y + 49
-                    source: 'data/rpgTile080.png'
+                    center_y: self.parent.center_y - 38
+                    source: 'data/slice03_03.png'
+                    # opacity: 0.5
+                Image:
+                    center_x: self.parent.center_x - 96
+                    center_y: self.parent.center_y - 38
+                    source: 'data/slice14_14.png'
+                    # opacity: 0.5
+                Image:
+                    center_x: self.parent.center_x + 96
+                    center_y: self.parent.center_y - 38
+                    source: 'data/slice15_15.png'
                     # opacity: 0.5
 
+                Image:
+                    center_x: self.parent.center_x + 40
+                    center_y: self.parent.center_y + 55 + 31
+                    source: 'data/doorOpenTop.png'
+                    # opacity: 0.5
+                Image:
+                    center_x: self.parent.center_x + 40
+                    center_y: self.parent.center_y + 31
+                    source: 'data/doorOpen.png'
+                    # opacity: 0.5
+
+
+
+
                 # DoorImage
-                DoorImage:
-                    center_x: self.parent.center_x
-                    center_y: self.parent.center_y
-                    source: self.get_door_image(root.game_status, turnbutton.state, root.door)
+                # DoorImage:
+                #     center_x: self.parent.center_x
+                #     center_y: self.parent.center_y + 40
+                #     source: self.get_door_image(root.game_status, turnbutton.state, root.door)
 
                 # Enermy - Status / AP / name
                 # Label:
@@ -89,14 +118,18 @@ Builder.load_string('''
                 #     center_x: self.parent.center_x
                 #     text: "AP: " + str(root.enermy.ap)
                 #     font_name: 'data/kenpixel.ttf'
+
+                # Floor
                 Label:
-                    font_size: 15
+                    font_size: 30
                     text: str(root.door.current_door)
                     bold: True
-                    center_y: self.parent.center_y + self.parent.height * 2 / 16
+                    # top: self.parent.top
+                    top: self.parent.top
                     center_x: self.parent.center_x
+                    bold: True
                     font_name: 'data/kenpixel.ttf'
-
+                    color: (0, 0, 0, 1)
                 Label:
                     font_size: 30
                     text: str(root.enermy.name) if root.enermy.game_status != "DEAD" else ""
@@ -104,14 +137,14 @@ Builder.load_string('''
                     center_y: self.parent.center_y + self.parent.height * 5 / 16
                     center_x: self.parent.center_x
                     font_name: 'data/kenpixel.ttf'
-
+                    color: (0, 0, 0, 1)
 
                 # Enermy
                 EnermyImage:
                     id: enermy_screen
                     center_x: self.parent.center_x
-                    center_y: self.parent.center_y
-                    source: self.get_enemy_image(root.game_status, root.enermy, turnbutton.state, root.door)
+                    center_y: self.parent.center_y + 35
+                    source: self.get_enermy_image(root.game_status, root.enermy, turnbutton.state, root.door)
 
                 # Enermy Heart Image
                 Image:
@@ -136,6 +169,12 @@ Builder.load_string('''
                 #     center_x: self.parent.center_x
                 #     center_y: self.parent.center_y
                 #     source: 'data/coinGold.png'
+
+                Image:
+                    center_x: self.parent.center_x - 70
+                    center_y: self.parent.center_y + 20
+                    source: 'data/Gall_5.png' if turnbutton.state == "down" else 'data/Gall_1.png'
+
 
                 # Damage
                 Label:
@@ -197,18 +236,14 @@ Builder.load_string('''
                             #     center_x: self.parent.center_x - 64
                             #     center_y: self.parent.center_y
                             #     source: 'data/rpgTile056.png'
-                            Image:
-                                center_x: self.parent.center_x - 32
-                                center_y: self.parent.center_y
-                                source: 'data/rpgTile075.png'
-                            Image:
-                                center_x: self.parent.center_x + 32
-                                center_y: self.parent.center_y
-                                source: 'data/rpgTile077.png'
-                            Image:
-                                center_x: self.parent.center_x
-                                center_y: self.parent.center_y
-                                source: 'data/Gall_5.png' if turnbutton.state == "down" else 'data/Gall_1.png'
+                            # Image:
+                            #     center_x: self.parent.center_x - 32
+                            #     center_y: self.parent.center_y
+                            #     source: 'data/rpgTile075.png'
+                            # Image:
+                            #     center_x: self.parent.center_x + 32
+                            #     center_y: self.parent.center_y
+                            #     source: 'data/rpgTile077.png'
 
                         # Player Status
                         BoxLayout:
@@ -307,7 +342,7 @@ class Repositon(object):
     def rebuild_background(self):
         self.canvas.before.clear()
         with self.canvas.before:
-            Color(0xbb / 255., 0xad / 255., 0xa0 / 255.)
+            Color(0xd0 / 255., 0xf4 / 255., 0xf7 / 255.)
             BorderImage(pos=self.pos, size=self.size)
             Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
 
@@ -338,12 +373,12 @@ class DoorImage(Image):
 
 # EnermyImage
 class EnermyImage(Image):
-    def get_enemy_image(self, game_status, enermy, state, door):
+    def get_enermy_image(self, game_status, enermy, state, door):
         """
         문을 선택하고 거기서 몬스터가 나오는 거 까지 관리 할 수 있을까?
         """
         if game_status == GAME_STATUS_OPEN:
-            return 'data/grey_arrowUpWhite.png'  if state=="down" else 'data/grey_arrowUpGrey.png'
+            return "data/tapTick.png"
         elif game_status == GAME_STATUS_REWARD:
             return enermy.png[2]
         elif state == "down":
@@ -389,21 +424,21 @@ class User(object):
 class Enermy(User, Widget):
     exp = NumericProperty(0)
     gold = NumericProperty(0)
-    name = StringProperty(0)
+    name = StringProperty("")
     png = ListProperty(0)
 
     def __init__(self, **kwargs):
         super(User, self).__init__()
 
-    def load(self, enemy_info):
-        self.ap = enemy_info["ap"]
-        self.hp = enemy_info["hp"]
-        self.exp = enemy_info["exp"]
-        self.gold = enemy_info["gold"]
+    def load(self, enermy_info):
+        self.ap = enermy_info["ap"]
+        self.hp = enermy_info["hp"]
+        self.exp = enermy_info["exp"]
+        self.gold = enermy_info["gold"]
         self.game_status = STATUS_ALIVE
-        self.name = enemy_info["name"]
-        self.maxhp = enemy_info["maxhp"]
-        self.png = enemy_info["png"]
+        self.name = enermy_info["name"]
+        self.maxhp = enermy_info["maxhp"]
+        self.png = enermy_info["png"]
 
 class Player(User, Widget):
     exp = NumericProperty(0)
@@ -412,8 +447,8 @@ class Player(User, Widget):
     def __init__(self, **kwargs):
         super(User, self).__init__()
 
-    def get_reward(self, enemy):
-        self.exp += enemy.exp
+    def get_reward(self, enermy):
+        self.exp += enermy.exp
 
         if self.exp >= 5*(self.lv/2)*(1+self.lv):
             self.lv += 1
@@ -421,7 +456,7 @@ class Player(User, Widget):
             self.maxhp = self.lv * self.maxhp
             self.hp = self.maxhp
             self.ap = self.ap * 2
-        self.gold += enemy.gold
+        self.gold += enermy.gold
 
     def save(self):
         return self.lv, self.ap, self.hp, self.maxhp
@@ -487,7 +522,7 @@ class TurnBattle(Widget):
 
 
 
-    def on_main_button(self, button, main_screen, enemy_screen, dmg, reward, floor):
+    def on_main_button(self, button, main_screen, enermy_screen, dmg, reward, floor):
         """ on_main_button turn """
 
         # Turn
@@ -496,25 +531,44 @@ class TurnBattle(Widget):
             self.door.current_door = floor
 
             self.load_enermy()
+
+            enermy_screen.center_x=enermy_screen.parent.center_x+35
+            anim = Animation(center_x=enermy_screen.parent.center_x, duration=.2)
+            if anim:
+                anim.stop(self)
+            anim.start(enermy_screen)
+
             self._status_change(GAME_STATUS_BATTLE)
         elif self.game_status == GAME_STATUS_BATTLE:
             self._status_change(GAME_STATUS_TURN)
+
         elif self.game_status == GAME_STATUS_TURN:
             # print dir(app.sound['swing'])
             app.sound['swing'].play()
-            left = Animation(center_x=enemy_screen.parent.center_x-10, duration=.2)
-            right = Animation(center_x=enemy_screen.parent.center_x, duration=.2)
+
+            # enermy
+            left = Animation(center_x=enermy_screen.parent.center_x-10, duration=.2)
+            right = Animation(center_x=enermy_screen.parent.center_x, duration=.2)
             anim = left + right
             if anim:
                 anim.stop(self)
-            anim.start(enemy_screen)
+            anim.start(enermy_screen)
+
+            # player
+            left = Animation(center_x=enermy_screen.parent.center_x-10, duration=.2)
+            right = Animation(center_x=enermy_screen.parent.center_x, duration=.2)
+            anim = left + right
+            if anim:
+                anim.stop(self)
+            anim.start(enermy_screen)
+
 
             # damage
-            dmg_anim = Animation(center_y=dmg.parent.center_y+60, duration=.2, t='out_circ')
+            dmg_anim = Animation(center_y=dmg.parent.center_y+80, duration=.2, t='out_circ')
             dmg_anim &= Animation(opacity=0, duration=.4)
 
             if dmg_anim:
-                dmg.center_y = dmg.parent.center_y
+                dmg.center_y = dmg.parent.center_y + 40
                 dmg.opacity=1
                 dmg_anim.stop(self)
             dmg_anim.start(dmg)
