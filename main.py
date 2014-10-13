@@ -17,7 +17,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty, ObjectProperty,NumericProperty, ListProperty
 from kivy.core.audio import SoundLoader
-from kivy.uix.spinner import Spinner
+# from kivy.uix.spinner import Spinner
 
 from doormanager import DoorManager
 
@@ -31,22 +31,22 @@ Builder.load_string('''
     center_x: self.parent.center_x
     center_y: self.parent.center_y
     Image:
-        center_x: self.parent.center_x - 32
+        center_x: self.parent.center_x - 35
         center_y: self.parent.center_y - 38
         source: 'data/slice03_03.png'
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x + 32
+        center_x: self.parent.center_x + 35
         center_y: self.parent.center_y - 38
         source: 'data/slice03_03.png'
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x - 96
+        center_x: self.parent.center_x - 105
         center_y: self.parent.center_y - 38
         source: 'data/slice14_14.png'
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x + 96
+        center_x: self.parent.center_x + 105
         center_y: self.parent.center_y - 38
         source: 'data/slice15_15.png'
         # opacity: 0.5
@@ -282,7 +282,7 @@ Builder.load_string('''
                             id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
-                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, reward, floor_spinner.text)
+                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, reward)
                             background_color: (0, 0, 0, 0)
                             Image:
                                 center_x: self.parent.center_x
@@ -297,18 +297,22 @@ Builder.load_string('''
                                 font_name: 'data/kenpixel.ttf'
 
     # Healing Spinner
-    Spinner:
-        id: floor_spinner
-        text: '1F'
-        values: ['1F','2F','3F','4F','5F']
-        # center_x: root.width / 4
-        # top: root.top - 400
-        size: [100, 50]
+    # Spinner:
+    #     id: floor_spinner
+    #     text: '1F'
+    #     values: ['1F','2F','3F','4F','5F']
+    #     # center_x: root.width / 4
+    #     # top: root.top - 400
+    #     size: [100, 50]
 
 ''')
 
 from kivy.graphics import Color, BorderImage
 from kivy.uix.anchorlayout import AnchorLayout
+
+# 컨트롤 부분을 밖으로 빼기 위함
+from kivy.app import App
+app = None
 
 class Repositon(object):
     def rebuild_background(self):
@@ -342,23 +346,54 @@ class DoorScreen(Widget, Repositon):
             x, y  = self.tpos
             diff_x = touch.x - x
             diff_y = touch.y - y
-            print diff_x, diff_y
-            print self.backgroundscreen.x, self.backgroundscreen.y
             space = 20
             if self.backgroundscreen:
-                if (diff_x  > space):
-                    self.backgroundscreen.center_x = touch.x
-                elif (diff_x < -space):
-                    self.backgroundscreen.center_x = touch.x
-                elif (diff_y > space):
-                    self.backgroundscreen.y = touch.y
-                elif (diff_y < -space):
-                    self.backgroundscreen.y = touch.y
+                # if (diff_x  > space) or (diff_x < -space):
+                #     self.backgroundscreen.center_x = touch.x
+                # if (diff_y > space) or (diff_y < -space):
+                self.backgroundscreen.y = touch.y
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
-            self.backgroundscreen.center_x = self.center_x
-            self.backgroundscreen.center_y = self.center_y
+            x, y  = self.tpos
+            diff_x = touch.x - x
+            diff_y = touch.y - y
+            space = 20
+            if self.backgroundscreen:
+                # if (diff_x  > space):
+                #     self.backgroundscreen.center_x = touch.x
+                # elif (diff_x < -space):
+                #     self.backgroundscreen.center_x = touch.x
+                if (diff_y > space):
+                    self.backgroundscreen.y = touch.y
+                    # 맵 변경이 일어남
+                    app.game.door.door_down()
+                    # up animation
+                    self.backgroundscreen.opacity = 0
+                    self.backgroundscreen.y = self.y
+                    anim = Animation(center_y=self.center_y, duration=.2)
+                    anim &= Animation(opacity=1, duration=.2)
+                    if anim:
+                        anim.stop(self)
+                    anim.start(self.backgroundscreen)
+
+
+                elif (diff_y < -space):
+
+                    self.backgroundscreen.y = touch.y
+                    app.game.door.door_up()
+                    # down animation
+                    self.backgroundscreen.opacity = 0
+                    self.backgroundscreen.top = self.top
+                    anim = Animation(center_y=self.center_y, duration=.2)
+                    anim &= Animation(opacity=1, duration=.2)
+                    if anim:
+                        anim.stop(self)
+                    anim.start(self.backgroundscreen)
+
+                else:
+                    self.backgroundscreen.center_x = self.center_x
+                    self.backgroundscreen.center_y = self.center_y
             touch.ungrab(self)
 
 
@@ -491,17 +526,15 @@ def status_name(game_status):
     if game_status == GAME_STATUS_REWARD:
         return "REWARD"
 
-# 컨트롤 부분을 밖으로 빼기 위함
-from kivy.app import App
-app = None
+
 
 # root
 class TurnBattle(Widget):
     player = Player()
     enermy = Enermy()
     door = DoorManager()
-
     game_status = GAME_STATUS_OPEN
+
 
     def update(self, dt):
         pass
@@ -533,14 +566,12 @@ class TurnBattle(Widget):
 
 
 
-    def on_main_button(self, button, main_screen, enermy_screen, dmg, reward, floor):
+    def on_main_button(self, button, main_screen, enermy_screen, dmg, reward):
         """ on_main_button turn """
 
         # Turn
         if self.game_status == GAME_STATUS_OPEN:
             # text code
-            self.door.current_door = floor
-
             self.load_enermy()
 
             enermy_screen.center_x=enermy_screen.parent.center_x+35

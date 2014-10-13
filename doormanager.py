@@ -174,8 +174,15 @@ class DoorManager(Widget):
         for key in self.doordata:
             self.enemies_rdd[key] = RandomDict(self.doordata[key]["Enemies"])
 
-    # def change_door(self, name):
-    #     self.rdd[kley
+    def door_up(self):
+        """ 문자열로처리"""
+        num = int(self.current_door[:-1])
+        self.current_door = str(num+1) + "F"
+
+    def door_down(self):
+        """ 문자열로처리"""
+        num = int(self.current_door[:-1])
+        self.current_door = str(num-1) + "F"
 
     def get_enermy_info(self):
         """
