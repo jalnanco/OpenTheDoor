@@ -21,22 +21,46 @@ from kivy.uix.spinner import Spinner
 
 from doormanager import DoorManager
 
-from kivy.uix.effectwidget import (# MonochromeEffect,
-                                   # InvertEffect,
-                                   # ScanlinesEffect,
-                                   # ChannelMixEffect,
-                                   # ScanlinesEffect,
-                                   # FXAAEffect,
-                                   # PixelateEffect,
-                                   # HorizontalBlurEffect,
-                                   VerticalBlurEffect
-)
-
 #!/usr/bin/kivy
 __version__ = '1.0'
 
 # 여기에 kivy파일을 추가함 - 그림파일 불러오기용
 Builder.load_string('''
+
+<BackGroundScreen>:
+    center_x: self.parent.center_x
+    center_y: self.parent.center_y
+    Image:
+        center_x: self.parent.center_x - 32
+        center_y: self.parent.center_y - 38
+        source: 'data/slice03_03.png'
+        # opacity: 0.5
+    Image:
+        center_x: self.parent.center_x + 32
+        center_y: self.parent.center_y - 38
+        source: 'data/slice03_03.png'
+        # opacity: 0.5
+    Image:
+        center_x: self.parent.center_x - 96
+        center_y: self.parent.center_y - 38
+        source: 'data/slice14_14.png'
+        # opacity: 0.5
+    Image:
+        center_x: self.parent.center_x + 96
+        center_y: self.parent.center_y - 38
+        source: 'data/slice15_15.png'
+        # opacity: 0.5
+    Image:
+        center_x: self.parent.center_x + 40
+        center_y: self.parent.center_y + 55 + 31
+        source: 'data/doorOpenTop.png'
+    # opacity: 0.5
+    Image:
+        center_x: self.parent.center_x + 40
+        center_y: self.parent.center_y + 31
+        source: 'data/doorOpen.png'
+        # opacity: 0.5
+
 
 <TurnBattle>:
     # 전체 공간
@@ -58,66 +82,14 @@ Builder.load_string('''
         MainLayout:
             id: main_screen
             DoorScreen:
+                backgroundscreen:backgroundscreen
                 size_hint: None, None
                 size: [min(main_screen.width, main_screen.height)] * 2
                 on_size: self.reposition()
                 on_pos: self.reposition()
-
-                # background
-                Image:
-                    center_x: self.parent.center_x - 32
-                    center_y: self.parent.center_y - 38
-                    source: 'data/slice03_03.png'
-                    # opacity: 0.5
-                Image:
-                    center_x: self.parent.center_x + 32
-                    center_y: self.parent.center_y - 38
-                    source: 'data/slice03_03.png'
-                    # opacity: 0.5
-                Image:
-                    center_x: self.parent.center_x - 96
-                    center_y: self.parent.center_y - 38
-                    source: 'data/slice14_14.png'
-                    # opacity: 0.5
-                Image:
-                    center_x: self.parent.center_x + 96
-                    center_y: self.parent.center_y - 38
-                    source: 'data/slice15_15.png'
-                    # opacity: 0.5
-
-                Image:
-                    center_x: self.parent.center_x + 40
-                    center_y: self.parent.center_y + 55 + 31
-                    source: 'data/doorOpenTop.png'
-                    # opacity: 0.5
-                Image:
-                    center_x: self.parent.center_x + 40
-                    center_y: self.parent.center_y + 31
-                    source: 'data/doorOpen.png'
-                    # opacity: 0.5
-
-
-
-
-                # DoorImage
-                # DoorImage:
-                #     center_x: self.parent.center_x
-                #     center_y: self.parent.center_y + 40
-                #     source: self.get_door_image(root.game_status, turnbutton.state, root.door)
-
-                # Enermy - Status / AP / name
-                # Label:
-                #     font_size: 20
-                #     center_y: self.parent.center_y - self.parent.height * 5 / 16
-                #     center_x: self.parent.center_x
-                #     text: root.enermy.game_status
-                #     font_name: 'data/kenpixel.ttf'
-                # Label:
-                #     font_size: 20
-                #     center_y: self.parent.center_y - self.parent.height * 4 / 16
-                #     center_x: self.parent.center_x
-                #     text: "AP: " + str(root.enermy.ap)
-                #     font_name: 'data/kenpixel.ttf'
+                # background Image
+                BackGroundScreen:
+                    id:backgroundscreen
 
                 # Floor
                 Label:
@@ -354,7 +326,46 @@ class Repositon(object):
         self.size = [min(screen.width, screen.height)] * 2
 
 class DoorScreen(Widget, Repositon):
+    backgroundscreen = ObjectProperty(None)
+    tpos = [0, 0]
+
+    def on_touch_down(self, touch):
+        super(DoorScreen, self).on_touch_down(touch)
+        if self.collide_point(*touch.pos):
+            touch.grab(self)
+            self.tpos = touch.pos
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is not self:
+            return
+        if self.collide_point(*touch.pos):
+            x, y  = self.tpos
+            diff_x = touch.x - x
+            diff_y = touch.y - y
+            print diff_x, diff_y
+            print self.backgroundscreen.x, self.backgroundscreen.y
+            space = 20
+            if self.backgroundscreen:
+                if (diff_x  > space):
+                    self.backgroundscreen.center_x = touch.x
+                elif (diff_x < -space):
+                    self.backgroundscreen.center_x = touch.x
+                elif (diff_y > space):
+                    self.backgroundscreen.y = touch.y
+                elif (diff_y < -space):
+                    self.backgroundscreen.y = touch.y
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            self.backgroundscreen.center_x = self.center_x
+            self.backgroundscreen.center_y = self.center_y
+            touch.ungrab(self)
+
+
+class BackGroundScreen(Widget):
     pass
+
+
 
 class HeartScreen(Widget, Repositon):
     pass
