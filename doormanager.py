@@ -91,7 +91,7 @@ SLIME_BLUE = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"GreenBlue",
+    "name":"BlueSlime",
     "png":['data/slimeBlue.png','data/slimeBlue_blue.png', 'data/slimeBlue_dead.png']
 }
 SNAIL = {
@@ -177,11 +177,18 @@ class DoorManager(Widget):
     def door_up(self):
         """ 문자열로처리"""
         num = int(self.current_door[:-1])
+        if num == 5:
+            return
+
         self.current_door = str(num+1) + "F"
 
     def door_down(self):
         """ 문자열로처리"""
+
         num = int(self.current_door[:-1])
+        if num == 1:
+            return
+
         self.current_door = str(num-1) + "F"
 
     def get_enermy_info(self):

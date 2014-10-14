@@ -21,6 +21,8 @@ from kivy.core.audio import SoundLoader
 
 from doormanager import DoorManager
 
+import random
+
 #!/usr/bin/kivy
 __version__ = '1.0'
 
@@ -78,6 +80,7 @@ Builder.load_string('''
                 pos: self.pos
                 size: self.size
 
+
         # 메인 전투화면
         MainLayout:
             id: main_screen
@@ -85,12 +88,16 @@ Builder.load_string('''
                 backgroundscreen:backgroundscreen
                 size_hint: None, None
                 size: [min(main_screen.width, main_screen.height)] * 2
-                on_size: self.reposition()
-                on_pos: self.reposition()
+                canvas.before:
+                    Color:
+                        rgba: self.get_backgroundcolor(root.door.current_door)
+                    BorderImage:
+                        pos: self.pos
+                        size: self.size
+
                 # background Image
                 BackGroundScreen:
                     id:backgroundscreen
-
                 # Floor
                 Label:
                     font_size: 30
@@ -135,9 +142,9 @@ Builder.load_string('''
                     source: 'data/hud_heartEmpty.png' if root.enermy.hp <  root.enermy.maxhp * 5/6 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp* 6/6 else 'data/hud_heartFull.png'
                     size: 40, 40
 
-                Image:
-                    id: reward
-                    opacity: 0
+                # Image:
+                #     id: reward
+                #     opacity: 0
                 #     center_x: self.parent.center_x
                 #     center_y: self.parent.center_y
                 #     source: 'data/coinGold.png'
@@ -147,6 +154,40 @@ Builder.load_string('''
                     center_y: self.parent.center_y + 20
                     source: 'data/Gall_5.png' if turnbutton.state == "down" else 'data/Gall_1.png'
 
+                # Gold
+                Label:
+                    id: gold_text
+                    font_size: 15
+                    center_x: self.parent.center_x - 70
+                    center_y: self.parent.center_y + 20
+                    text: "+" + str(root.enermy.gold) + "g"
+                    # font_name: 'data/kenpixel.ttf'
+                    color: (1, 1, 0, 1)
+                    bold: True
+                    opacity: 0
+                # Exp
+                Label:
+                    id: exp_text
+                    font_size: 15
+                    center_x: self.parent.center_x - 70
+                    center_y: self.parent.center_y + 20
+                    text: "+" + str(root.enermy.exp) + "xp"
+                    # font_name: 'data/kenpixel.ttf'
+                    color: (0, 0.5, 1.0, 1)
+                    bold: True
+                    opacity: 0
+                # Lv
+                Label:
+                    id: lv_text
+                    font_size: 25
+                    center_x: self.parent.center_x - 70
+                    center_y: self.parent.center_y + 20
+                    text: "Lv Up!"
+                    font_name: 'data/kenpixel.ttf'
+                    color: (1, 0, 1, 1)
+                    opacity: 0
+
+
 
                 # Damage
                 Label:
@@ -155,7 +196,7 @@ Builder.load_string('''
                     center_y: self.parent.center_y - self.parent.height
                     center_x: self.parent.center_x
                     text: "-" + str(root.player.ap)
-                    font_name: 'data/kenpixel.ttf'
+                    # font_name: 'data/kenpixel.ttf'
                     color: (1, 0, 0, 1)
                     bold: True
 
@@ -198,8 +239,6 @@ Builder.load_string('''
                             id: battle_screen2
                             # size_hint: None, None
                             size: [min(user_screen.width, user_screen.height)] * 2
-                            on_size: battle_screen2.reposition()
-                            on_pos: battle_screen2.reposition()
                             # Image:
                             #     center_x: self.parent.center_x - 64
                             #     center_y: self.parent.center_y
@@ -265,6 +304,7 @@ Builder.load_string('''
                                 text: "gold: " + str(root.player.gold)
                                 font_name: 'data/kenpixel.ttf'
 
+
                     # 박스 2 - 정보표시 2
                     BoxLayout:
                         padding: '10dp'
@@ -282,7 +322,7 @@ Builder.load_string('''
                             id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
-                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, reward)
+                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, gold_text, exp_text, lv_text)
                             background_color: (0, 0, 0, 0)
                             Image:
                                 center_x: self.parent.center_x
@@ -314,24 +354,11 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.app import App
 app = None
 
-class Repositon(object):
-    def rebuild_background(self):
-        self.canvas.before.clear()
-        with self.canvas.before:
-            Color(0xd0 / 255., 0xf4 / 255., 0xf7 / 255.)
-            BorderImage(pos=self.pos, size=self.size)
-            Color(0xcc / 255., 0xc0 / 255., 0xb3 / 255.)
 
-    def reposition(self, *args):
-        self.rebuild_background()
-
-    def repostion_with_size(self, screen):
-        self.rebuild_background()
-        self.size = [min(screen.width, screen.height)] * 2
-
-class DoorScreen(Widget, Repositon):
+class DoorScreen(Widget):
     backgroundscreen = ObjectProperty(None)
     tpos = [0, 0]
+    backgroundcolor = 0xaa / 255., 0xcc / 255., 0xcc / 255. ,.5
 
     def on_touch_down(self, touch):
         super(DoorScreen, self).on_touch_down(touch)
@@ -376,12 +403,14 @@ class DoorScreen(Widget, Repositon):
                     if anim:
                         anim.stop(self)
                     anim.start(self.backgroundscreen)
+                    self.backgroundcolor = random.random(),random.random(),random.random(),.5
+
 
 
                 elif (diff_y < -space):
-
                     self.backgroundscreen.y = touch.y
                     app.game.door.door_up()
+
                     # down animation
                     self.backgroundscreen.opacity = 0
                     self.backgroundscreen.top = self.top
@@ -390,11 +419,15 @@ class DoorScreen(Widget, Repositon):
                     if anim:
                         anim.stop(self)
                     anim.start(self.backgroundscreen)
+                    self.backgroundcolor = random.random(),random.random(),random.random(),.5
 
                 else:
                     self.backgroundscreen.center_x = self.center_x
                     self.backgroundscreen.center_y = self.center_y
             touch.ungrab(self)
+
+    def get_backgroundcolor(self, door):
+        return self.backgroundcolor
 
 
 class BackGroundScreen(Widget):
@@ -402,7 +435,7 @@ class BackGroundScreen(Widget):
 
 
 
-class HeartScreen(Widget, Repositon):
+class HeartScreen(Widget):
     pass
 
 GAME_STATUS_OPEN = 0
@@ -433,7 +466,7 @@ class EnermyImage(Image):
             return enermy.png[1]
 
 # User Screen
-class UserScreen(Widget, Repositon):
+class UserScreen(Widget):
     score = NumericProperty(0)
 
 # Turn Button
@@ -495,6 +528,7 @@ class Player(User, Widget):
 
     def get_reward(self, enermy):
         self.exp += enermy.exp
+        self.gold += enermy.gold
 
         if self.exp >= 5*(self.lv/2)*(1+self.lv):
             self.lv += 1
@@ -502,7 +536,10 @@ class Player(User, Widget):
             self.maxhp = self.lv * self.maxhp
             self.hp = self.maxhp
             self.ap = self.ap * 2
-        self.gold += enermy.gold
+            return True
+        return False
+
+
 
     def save(self):
         return self.lv, self.ap, self.hp, self.maxhp
@@ -515,7 +552,6 @@ class Player(User, Widget):
 player_data = [1, 1, 1000, 1000]
 
 
-
 def status_name(game_status):
     if game_status == GAME_STATUS_OPEN:
         return "OPEN"
@@ -526,8 +562,6 @@ def status_name(game_status):
     if game_status == GAME_STATUS_REWARD:
         return "REWARD"
 
-
-
 # root
 class TurnBattle(Widget):
     player = Player()
@@ -535,9 +569,8 @@ class TurnBattle(Widget):
     door = DoorManager()
     game_status = GAME_STATUS_OPEN
 
-
-    def update(self, dt):
-        pass
+    # def update(self, dt):
+    #     pass
 
     def init(self):
         self.player.lv = player_data[0]
@@ -566,7 +599,7 @@ class TurnBattle(Widget):
 
 
 
-    def on_main_button(self, button, main_screen, enermy_screen, dmg, reward):
+    def on_main_button(self, button, main_screen, enermy_screen, dmg, gold_text, exp_text, lv_text):
         """ on_main_button turn """
 
         # Turn
@@ -608,8 +641,10 @@ class TurnBattle(Widget):
             # damage
             dmg_anim = Animation(center_y=dmg.parent.center_y+80, duration=.2, t='out_circ')
             dmg_anim &= Animation(opacity=0, duration=.4)
+            dmg_anim &= Animation(font_size=40, duration=.4)
 
             if dmg_anim:
+                dmg.font_size=15
                 dmg.center_y = dmg.parent.center_y + 40
                 dmg.opacity=1
                 dmg_anim.stop(self)
@@ -628,8 +663,39 @@ class TurnBattle(Widget):
                 self._status_change(GAME_STATUS_REWARD)
         elif self.game_status == GAME_STATUS_REWARD:
             app.sound['coin'].play()
-            self.player.get_reward(self.enermy)
+            is_levelup = self.player.get_reward(self.enermy)
 
+            # gold_text
+            gold_anim = Animation(center_y=gold_text.parent.center_y+60, duration=.2, t='out_circ')
+            gold_anim &= Animation(opacity=0, duration=.4)
+
+            if gold_anim:
+                gold_text.center_y = gold_text.parent.center_y + 40
+                gold_text.opacity=1
+                gold_anim.stop(self)
+            gold_anim.start(gold_text)
+
+            # exp
+            exp_anim = Animation(center_y=exp_text.parent.center_y+80, duration=.2, t='out_circ')
+            exp_anim &= Animation(opacity=0, duration=.4)
+
+            if exp_anim:
+                exp_text.center_y = exp_text.parent.center_y + 40
+                exp_text.opacity=1
+                exp_anim.stop(self)
+            exp_anim.start(exp_text)
+
+            if is_levelup:
+                # lv
+                lv_anim = Animation(center_y=lv_text.parent.center_y+110, duration=.2, t='out_circ')
+                lv_anim &= Animation(opacity=0, duration=.4)
+                lv_anim &= Animation(font_size=100, duration=.4)
+                if lv_anim:
+                    dmg.font_size=25
+                    lv_text.center_y = lv_text.parent.center_y + 40
+                    lv_text.opacity=1
+                    lv_anim.stop(self)
+                lv_anim.start(lv_text)
 
             # # reward
             # reward.center_y = reward.parent.center_y
@@ -655,7 +721,7 @@ class TurnApp(App):
         app = self
 
         # background sound
-        # start the background music:
+        # start the background music
         # self.music = SoundLoader.load('sound/8bitattempt.ogg')
         # self.music.bind(on_stop=self.sound_replay)
         # self.music.play()
@@ -669,7 +735,7 @@ class TurnApp(App):
         self.game = TurnBattle()
         self.game.init()
         # self.game.load_enermy()
-        Clock.schedule_interval(self.game.update, 1.0 / 60.0)
+        # Clock.schedule_interval(self.game.update, 1.0 / 60.0)
         return self.game
 
     def sound_replay(self, instance):
