@@ -34,7 +34,7 @@ Builder.load_string('''
         Line:
             rectangle: self.x+1,self.y+1,self.width-1,self.height-1
             dash_offset: 2
-            dash_length: 1
+            dash_length: 3
 
 <BackGroundScreen>:
     center_x: self.parent.center_x
@@ -125,7 +125,7 @@ Builder.load_string('''
                     color: (0, 0, 0, 1)
                 Label:
                     font_size: 30
-                    text: str(root.enermy.name) if root.enermy.game_status != "DEAD" else "KILL"
+                    text: str(root.enermy.name) if root.enermy.game_status != "DEAD" else ""
                     bold: True
                     center_y: self.parent.center_y + self.parent.height * 5 / 16
                     center_x: self.parent.center_x
@@ -167,48 +167,56 @@ Builder.load_string('''
                 # Gold
                 Label:
                     id: gold_text
-                    font_size: 15
+                    font_size: 30
                     center_x: self.parent.center_x - 70
-                    center_y: self.parent.center_y + 20
+                    center_y: self.parent.center_y + 100
                     text: "+" + str(root.enermy.gold) + "g"
-                    font_name: 'data/NanumGothic.ttf'
+                    font_name: 'data/kenpixel.ttf'
                     color: (1, 1, 0, 1)
                     bold: True
                     opacity: 0
                 # Exp
                 Label:
                     id: exp_text
-                    font_size: 15
+                    font_size: 30
                     center_x: self.parent.center_x - 70
-                    center_y: self.parent.center_y + 20
+                    center_y: self.parent.center_y + 100
                     text: "+" + str(root.enermy.exp) + "xp"
-                    font_name: 'data/NanumGothic.ttf'
+                    font_name: 'data/kenpixel.ttf'
                     color: (0, 0.5, 1.0, 1)
                     bold: True
                     opacity: 0
                 # Lv
                 Label:
                     id: lv_text
-                    font_size: 25
+                    font_size: 40
                     center_x: self.parent.center_x - 70
-                    center_y: self.parent.center_y + 20
+                    center_y: self.parent.center_y + 100
                     text: "Lv Up!"
-                    font_name: 'data/NanumGothic.ttf'
+                    font_name: 'data/kenpixel.ttf'
+                    bold: True
                     color: (1, 0, 1, 1)
                     opacity: 0
-
 
 
                 # Damage
                 Label:
                     id: dmg
-                    font_size: 15
+                    font_size: 30
                     center_y: self.parent.center_y - self.parent.height
                     center_x: self.parent.center_x
                     text: "-" + str(root.player.ap)
-                    font_name: 'data/NanumGothic.ttf'
+                    font_name: 'data/kenpixel.ttf'
                     color: (1, 0, 0, 1)
                     bold: True
+                    Image:
+                        id: attack_effect
+                        center_y: self.parent.center_y
+                        center_x: self.parent.center_x
+                        source: 'data/sonicExplosion00.png'
+                        allow_stretch: True
+                        size: 40, 40
+                        opacity: 1.0
 
 
         # 박스 2
@@ -253,18 +261,18 @@ Builder.load_string('''
                             #     center_x: self.parent.center_x - 64
                             #     center_y: self.parent.center_y
                             #     source: 'data/rpgTile056.png'
-                            # Image:
-                            #     center_x: self.parent.center_x - 64
-                            #     center_y: self.parent.center_y
-                            #     source: 'data/rpgTile056.png'
-                            # Image:
-                            #     center_x: self.parent.center_x - 32
-                            #     center_y: self.parent.center_y
-                            #     source: 'data/rpgTile075.png'
-                            # Image:
-                            #     center_x: self.parent.center_x + 32
-                            #     center_y: self.parent.center_y
-                            #     source: 'data/rpgTile077.png'
+                            Image:
+                                center_x: self.parent.center_x - 32
+                                center_y: self.parent.center_y
+                                source: 'data/rpgTile075.png'
+                            Image:
+                                center_x: self.parent.center_x + 32
+                                center_y: self.parent.center_y
+                                source: 'data/rpgTile077.png'
+                            Image:
+                                center_x: self.parent.center_x
+                                center_y: self.parent.center_y
+                                source: 'data/Gall_1.png'
 
                         # Player Status
                         BoxLayout:
@@ -332,7 +340,7 @@ Builder.load_string('''
                             id: turnbutton
                             center_x: root.width * 3 / 4
                             top: root.top - 400
-                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, gold_text, exp_text, lv_text)
+                            on_press: root.on_main_button(self, main_screen, enermy_screen, dmg, attack_effect, gold_text, exp_text, lv_text)
                             background_color: (0, 0, 0, 0)
                             Image:
                                 center_x: self.parent.center_x
@@ -498,9 +506,6 @@ class User(object):
     game_status = StringProperty(STATUS_ALIVE)
     lv = NumericProperty(0)
 
-    def up_score(self, number):
-        self.hp += 1
-
     def fight(self, ap):
         self.hp -= ap
 
@@ -609,7 +614,7 @@ class TurnBattle(Widget):
 
 
 
-    def on_main_button(self, button, main_screen, enermy_screen, dmg, gold_text, exp_text, lv_text):
+    def on_main_button(self, button, main_screen, enermy_screen, dmg, attack_effect, gold_text, exp_text, lv_text):
         """ on_main_button turn """
 
         # Turn
@@ -649,17 +654,29 @@ class TurnBattle(Widget):
 
 
             # damage
-            dmg_anim = Animation(center_y=dmg.parent.center_y+80, duration=.2, t='out_circ')
-            dmg_anim &= Animation(opacity=0, duration=.4)
-            dmg_anim &= Animation(font_size=40, duration=.4)
+            # 실제 공격데미지 만큼 커지면 재미있을 듯
+            dmg_anim = Animation(center_y=dmg.parent.center_y+100, duration=.4, t='out_circ')
+            dmg_anim &= Animation(opacity=0, duration=.5)
+            dmg_anim &= Animation(font_size=60, duration=.5)
 
             if dmg_anim:
-                dmg.font_size=15
+                dmg.font_size = 30
                 dmg.center_y = dmg.parent.center_y + 40
-                dmg.opacity=1
+                dmg.opacity = 1
                 dmg_anim.stop(self)
             dmg_anim.start(dmg)
 
+            # attack_effect
+            attack_effect_anim = Animation(center_y=dmg.parent.center_y+100, duration=2.0, t='out_circ')
+            attack_effect_anim &= Animation(opacity=0.0, duration=.5)
+            attack_effect_anim &= Animation(size=(120, 120), duration=.5)
+
+            if attack_effect_anim:
+                attack_effect.size = (40, 40)
+                attack_effect.center_y = attack_effect.parent.center_y
+                attack_effect.opacity=1.0
+                attack_effect_anim.stop(self)
+            attack_effect_anim.start(attack_effect)
 
             # check for fight
             if self.player.hp == 0 or self.enermy.hp == 0:
@@ -676,8 +693,8 @@ class TurnBattle(Widget):
             is_levelup = self.player.get_reward(self.enermy)
 
             # gold_text
-            gold_anim = Animation(center_y=gold_text.parent.center_y+60, duration=.2, t='out_circ')
-            gold_anim &= Animation(opacity=0, duration=.4)
+            gold_anim = Animation(center_y=gold_text.parent.center_y+100, duration=.2, t='out_circ')
+            gold_anim &= Animation(opacity=0, duration=1.0)
 
             if gold_anim:
                 gold_text.center_y = gold_text.parent.center_y + 40
@@ -686,8 +703,8 @@ class TurnBattle(Widget):
             gold_anim.start(gold_text)
 
             # exp
-            exp_anim = Animation(center_y=exp_text.parent.center_y+80, duration=.2, t='out_circ')
-            exp_anim &= Animation(opacity=0, duration=.4)
+            exp_anim = Animation(center_y=exp_text.parent.center_y+130, duration=.2, t='out_circ')
+            exp_anim &= Animation(opacity=0, duration=1.0)
 
             if exp_anim:
                 exp_text.center_y = exp_text.parent.center_y + 40
@@ -697,9 +714,9 @@ class TurnBattle(Widget):
 
             if is_levelup:
                 # lv
-                lv_anim = Animation(center_y=lv_text.parent.center_y+110, duration=.2, t='out_circ')
-                lv_anim &= Animation(opacity=0, duration=.4)
-                lv_anim &= Animation(font_size=100, duration=.4)
+                lv_anim = Animation(center_y=lv_text.parent.center_y+150, duration=.2, t='out_circ')
+                lv_anim &= Animation(opacity=0, duration=2.0)
+                lv_anim &= Animation(font_size=100, duration=2.0)
                 if lv_anim:
                     dmg.font_size=25
                     lv_text.center_y = lv_text.parent.center_y + 40
