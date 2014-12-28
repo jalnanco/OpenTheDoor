@@ -29,38 +29,52 @@ __version__ = '1.0'
 # 여기에 kivy파일을 추가함 - 그림파일 불러오기용
 Builder.load_string('''
 
+<Widget>:
+    canvas.after:
+        Line:
+            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+            dash_offset: 2
+            dash_length: 1
+
 <BackGroundScreen>:
     center_x: self.parent.center_x
     center_y: self.parent.center_y
     Image:
-        center_x: self.parent.center_x - 35
-        center_y: self.parent.center_y - 38
+        center_x: self.parent.center_x - 50
+        center_y: self.parent.center_y - 50
         source: 'data/slice03_03.png'
+        allow_stretch: True
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x + 35
-        center_y: self.parent.center_y - 38
+        center_x: self.parent.center_x + 50
+        center_y: self.parent.center_y - 50
         source: 'data/slice03_03.png'
+        allow_stretch: True
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x - 105
-        center_y: self.parent.center_y - 38
+        center_x: self.parent.center_x - 150
+        center_y: self.parent.center_y - 50
         source: 'data/slice14_14.png'
+        allow_stretch: True
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x + 105
-        center_y: self.parent.center_y - 38
+        center_x: self.parent.center_x + 150
+        center_y: self.parent.center_y - 50
         source: 'data/slice15_15.png'
+        allow_stretch: True
+        # opacity: 0.5
+
+    Image:
+        center_x: self.parent.center_x + 70
+        center_y: self.parent.center_y + 100 + 50
+        source: 'data/doorOpenTop.png'
+        allow_stretch: True
         # opacity: 0.5
     Image:
-        center_x: self.parent.center_x + 40
-        center_y: self.parent.center_y + 55 + 31
-        source: 'data/doorOpenTop.png'
-    # opacity: 0.5
-    Image:
-        center_x: self.parent.center_x + 40
-        center_y: self.parent.center_y + 31
+        center_x: self.parent.center_x + 70
+        center_y: self.parent.center_y + 50
         source: 'data/doorOpen.png'
+        allow_stretch: True
         # opacity: 0.5
 
 
@@ -107,22 +121,23 @@ Builder.load_string('''
                     top: self.parent.top
                     center_x: self.parent.center_x
                     bold: True
-                    font_name: 'data/kenpixel.ttf'
+                    font_name: 'data/NanumGothic.ttf'
                     color: (0, 0, 0, 1)
                 Label:
                     font_size: 30
-                    text: str(root.enermy.name) if root.enermy.game_status != "DEAD" else ""
+                    text: str(root.enermy.name) if root.enermy.game_status != "DEAD" else "KILL"
                     bold: True
                     center_y: self.parent.center_y + self.parent.height * 5 / 16
                     center_x: self.parent.center_x
-                    font_name: 'data/kenpixel.ttf'
+                    font_name: 'data/NanumGothic.ttf'
                     color: (0, 0, 0, 1)
 
                 # Enermy
                 EnermyImage:
                     id: enermy_screen
-                    center_x: self.parent.center_x
-                    center_y: self.parent.center_y + 35
+                    center_x: self.parent.center_x + 30
+                    center_y: self.parent.center_y + 50
+                    allow_stretch: True
                     source: self.get_enermy_image(root.game_status, root.enermy, turnbutton.state, root.door)
 
                 # Enermy Heart Image
@@ -142,17 +157,12 @@ Builder.load_string('''
                     source: 'data/hud_heartEmpty.png' if root.enermy.hp <  root.enermy.maxhp * 5/6 else 'data/hud_heartHalf.png' if root.enermy.hp <  root.enermy.maxhp* 6/6 else 'data/hud_heartFull.png'
                     size: 40, 40
 
-                # Image:
-                #     id: reward
-                #     opacity: 0
-                #     center_x: self.parent.center_x
-                #     center_y: self.parent.center_y
-                #     source: 'data/coinGold.png'
-
+                # Player
                 Image:
-                    center_x: self.parent.center_x - 70
-                    center_y: self.parent.center_y + 20
+                    center_x: self.parent.center_x - 80
+                    center_y: self.parent.center_y + 40
                     source: 'data/Gall_5.png' if turnbutton.state == "down" else 'data/Gall_1.png'
+                    allow_stretch: True
 
                 # Gold
                 Label:
@@ -161,7 +171,7 @@ Builder.load_string('''
                     center_x: self.parent.center_x - 70
                     center_y: self.parent.center_y + 20
                     text: "+" + str(root.enermy.gold) + "g"
-                    # font_name: 'data/kenpixel.ttf'
+                    font_name: 'data/NanumGothic.ttf'
                     color: (1, 1, 0, 1)
                     bold: True
                     opacity: 0
@@ -172,7 +182,7 @@ Builder.load_string('''
                     center_x: self.parent.center_x - 70
                     center_y: self.parent.center_y + 20
                     text: "+" + str(root.enermy.exp) + "xp"
-                    # font_name: 'data/kenpixel.ttf'
+                    font_name: 'data/NanumGothic.ttf'
                     color: (0, 0.5, 1.0, 1)
                     bold: True
                     opacity: 0
@@ -183,7 +193,7 @@ Builder.load_string('''
                     center_x: self.parent.center_x - 70
                     center_y: self.parent.center_y + 20
                     text: "Lv Up!"
-                    font_name: 'data/kenpixel.ttf'
+                    font_name: 'data/NanumGothic.ttf'
                     color: (1, 0, 1, 1)
                     opacity: 0
 
@@ -196,7 +206,7 @@ Builder.load_string('''
                     center_y: self.parent.center_y - self.parent.height
                     center_x: self.parent.center_x
                     text: "-" + str(root.player.ap)
-                    # font_name: 'data/kenpixel.ttf'
+                    font_name: 'data/NanumGothic.ttf'
                     color: (1, 0, 0, 1)
                     bold: True
 
@@ -264,7 +274,7 @@ Builder.load_string('''
                                 font_size: 20
                                 pos: self.pos
                                 text: root.player.game_status if root.player.game_status != 'DEAD' else "game over!"
-                                font_name: 'data/kenpixel.ttf'
+                                font_name: 'data/NanumGothic.ttf'
 
                             # 가능 하면 이미지 편집을 할껄..
                             HeartScreen:
@@ -286,23 +296,23 @@ Builder.load_string('''
                             Label:
                                 font_size: 20
                                 pos: self.pos
-                                text: "LV: "+ str(root.player.lv)
-                                font_name: 'data/kenpixel.ttf'
+                                text: "레벨: "+ str(root.player.lv)
+                                font_name: 'data/NanumGothic.ttf'
                             Label:
                                 font_size: 20
                                 pos: self.pos
-                                text: "AP: "+ str(root.player.ap)
-                                font_name: 'data/kenpixel.ttf'
+                                text: "공격력: "+ str(root.player.ap)
+                                font_name: 'data/NanumGothic.ttf'
                             Label:
                                 font_size: 20
                                 pos: self.pos
-                                text: "exp: " + str(root.player.exp)
-                                font_name: 'data/kenpixel.ttf'
+                                text: "경험치: " + str(root.player.exp)
+                                font_name: 'data/NanumGothic.ttf'
                             Label:
                                 font_size: 20
                                 pos: self.pos
-                                text: "gold: " + str(root.player.gold)
-                                font_name: 'data/kenpixel.ttf'
+                                text: "골드: " + str(root.player.gold)
+                                font_name: 'data/NanumGothic.ttf'
 
 
                     # 박스 2 - 정보표시 2
@@ -334,7 +344,7 @@ Builder.load_string('''
                                 text: self.parent.name
                                 bold: True
                                 font_size: 30
-                                font_name: 'data/kenpixel.ttf'
+                                font_name: 'data/NanumGothic.ttf'
 
     # Healing Spinner
     # Spinner:
@@ -554,13 +564,13 @@ player_data = [1, 1, 1000, 1000]
 
 def status_name(game_status):
     if game_status == GAME_STATUS_OPEN:
-        return "OPEN"
+        return "시작"
     if game_status == GAME_STATUS_BATTLE:
-        return "BATTLE"
+        return "전투"
     if game_status == GAME_STATUS_TURN:
-        return "TURN"
+        return "진행"
     if game_status == GAME_STATUS_REWARD:
-        return "REWARD"
+        return "보상"
 
 # root
 class TurnBattle(Widget):

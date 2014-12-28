@@ -10,7 +10,7 @@ GHOST = {
     "ap":1,
     "exp":1,
     "gold":1,
-    "name":"Ghost",
+    "name":"의문의 유령",
     "png":['data/ghost_normal.png','data/ghost.png', 'data/ghost_dead.png']
 }
 FLYFLY = {
@@ -19,7 +19,7 @@ FLYFLY = {
     "ap":1,
     "exp":1,
     "gold":1,
-    "name":"FlyFly",
+    "name":"날파리",
     "png":['data/flyFly1.png','data/flyFly2.png', 'data/flyDead.png']
 }
 MOUSE = {
@@ -28,7 +28,7 @@ MOUSE = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Mouse",
+    "name":"찍찍이",
     "png":['data/mouse.png','data/mouse_walk.png', 'data/mouse_dead.png']
 }
 BAT = {
@@ -37,7 +37,7 @@ BAT = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Bat",
+    "name":"박쥐",
     "png":['data/bat.png','data/bat_fly.png', 'data/bat_dead.png']
 }
 BEE = {
@@ -46,7 +46,7 @@ BEE = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Bee",
+    "name":"벌",
     "png":['data/bee.png','data/bee_fly.png', 'data/bee_dead.png']
 }
 FLY = {
@@ -55,7 +55,7 @@ FLY = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Fly",
+    "name":"파리",
     "png":['data/fly.png','data/fly_fly.png', 'data/fly_dead.png']
 }
 FROG = {
@@ -64,7 +64,7 @@ FROG = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Frog",
+    "name":"개굴이",
     "png":['data/frog.png','data/frog_leap.png', 'data/frog_dead.png']
 }
 SLIME_GREEN = {
@@ -73,7 +73,7 @@ SLIME_GREEN = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"GreenSlime",
+    "name":"초록 슬라임",
     "png":['data/slimeGreen.png','data/slimeGreen_walk.png', 'data/slimeGreen_dead.png']
 }
 SLIME_PINK = {
@@ -82,7 +82,7 @@ SLIME_PINK = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"PinkSlime",
+    "name":"핑크 슬라임",
     "png":['data/slime.png','data/slime_walk.png', 'data/slime_dead.png']
 }
 SLIME_BLUE = {
@@ -91,7 +91,7 @@ SLIME_BLUE = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"BlueSlime",
+    "name":"블루 슬라임",
     "png":['data/slimeBlue.png','data/slimeBlue_blue.png', 'data/slimeBlue_dead.png']
 }
 SNAIL = {
@@ -100,7 +100,7 @@ SNAIL = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Snail",
+    "name":"달팽이 병정",
     "png":['data/snail.png','data/snail_walk.png', 'data/snail_shell.png']
 }
 SNAKELAVA = {
@@ -109,7 +109,7 @@ SNAKELAVA = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"CarrotWorm",
+    "name":"당근 벌레",
     "png":['data/snakeLava.png','data/snakeLava_ani.png', 'data/snakeLava_dead.png']
 }
 SNAKESLIME = {
@@ -118,7 +118,7 @@ SNAKESLIME = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"GreenWorm",
+    "name":"초록 벌레",
     "png":['data/snakeSlime.png','data/snakeSlime_ani.png', 'data/snakeSlime_dead.png']
 }
 SNAKE = {
@@ -127,7 +127,7 @@ SNAKE = {
     "ap":2,
     "exp":1,
     "gold":1,
-    "name":"Snake",
+    "name":"뱀",
     "png":['data/snake.png','data/snake_walk.png', 'data/snake_dead.png']
 }
 
