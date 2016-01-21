@@ -15,7 +15,7 @@ from kivy.base import runTouchApp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import StringProperty, ObjectProperty, NumericProperty, ListProperty
+from kivy.properties import StringProperty, ObjectProperty,NumericProperty, ListProperty
 from kivy.core.audio import SoundLoader
 # from kivy.uix.spinner import Spinner
 
@@ -30,11 +30,11 @@ __version__ = '1.0'
 Builder.load_string('''
 
 <Widget>:
-#    canvas.after:
-#        Line:
-#            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
-#            dash_offset: 2
-#            dash_length: 3
+    canvas.after:
+        Line:
+            rectangle: self.x+1,self.y+1,self.width-1,self.height-1
+            dash_offset: 2
+            dash_length: 3
 
 <BackGroundScreen>:
     center_x: self.parent.center_x
@@ -376,7 +376,7 @@ app = None
 class DoorScreen(Widget):
     backgroundscreen = ObjectProperty(None)
     tpos = [0, 0]
-    backgroundcolor = 0xaa / 255., 0xcc / 255., 0xcc / 255., .5
+    backgroundcolor = 0xaa / 255., 0xcc / 255., 0xcc / 255. ,.5
 
     def on_touch_down(self, touch):
         super(DoorScreen, self).on_touch_down(touch)
@@ -388,7 +388,7 @@ class DoorScreen(Widget):
         if touch.grab_current is not self:
             return
         if self.collide_point(*touch.pos):
-            x, y = self.tpos
+            x, y  = self.tpos
             diff_x = touch.x - x
             diff_y = touch.y - y
             space = 20
@@ -400,7 +400,7 @@ class DoorScreen(Widget):
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
-            x, y = self.tpos
+            x, y  = self.tpos
             diff_x = touch.x - x
             diff_y = touch.y - y
             space = 20
@@ -421,8 +421,9 @@ class DoorScreen(Widget):
                     if anim:
                         anim.stop(self)
                     anim.start(self.backgroundscreen)
-                    self.backgroundcolor = random.random(
-                    ), random.random(), random.random(), .5
+                    self.backgroundcolor = random.random(),random.random(),random.random(),.5
+
+
 
                 elif (diff_y < -space):
                     self.backgroundscreen.y = touch.y
@@ -436,8 +437,7 @@ class DoorScreen(Widget):
                     if anim:
                         anim.stop(self)
                     anim.start(self.backgroundscreen)
-                    self.backgroundcolor = random.random(
-                    ), random.random(), random.random(), .5
+                    self.backgroundcolor = random.random(),random.random(),random.random(),.5
 
                 else:
                     self.backgroundscreen.center_x = self.center_x
@@ -452,6 +452,7 @@ class BackGroundScreen(Widget):
     pass
 
 
+
 class HeartScreen(Widget):
     pass
 
@@ -461,20 +462,14 @@ GAME_STATUS_TURN = 2
 GAME_STATUS_REWARD = 3
 
 # DoorImage
-
-
 class DoorImage(Image):
-
     def get_door_image(self, game_status, state, door):
         if game_status == GAME_STATUS_OPEN:
-            return 'data/rpgTile228.png' if state == "down" else 'data/rpgTile194.png'
+            return 'data/rpgTile228.png' if state=="down" else 'data/rpgTile194.png'
         return 'data/rpgTile228.png'
 
 # EnermyImage
-
-
 class EnermyImage(Image):
-
     def get_enermy_image(self, game_status, enermy, state, door):
         """
         문을 선택하고 거기서 몬스터가 나오는 거 까지 관리 할 수 있을까?
@@ -489,20 +484,14 @@ class EnermyImage(Image):
             return enermy.png[1]
 
 # User Screen
-
-
 class UserScreen(Widget):
     score = NumericProperty(0)
 
 # Turn Button
-
-
 class TurnButton(Button):
     name = StringProperty("OPEN")
 
-
 class MainLayout(AnchorLayout):
-
     def __init__(self, **kwargs):
         super(MainLayout, self).__init__()
 
@@ -526,7 +515,6 @@ class User(object):
             return 1
         return 0
 
-
 class Enermy(User, Widget):
     exp = NumericProperty(0)
     gold = NumericProperty(0)
@@ -546,7 +534,6 @@ class Enermy(User, Widget):
         self.maxhp = enermy_info["maxhp"]
         self.png = enermy_info["png"]
 
-
 class Player(User, Widget):
     exp = NumericProperty(0)
     gold = NumericProperty(0)
@@ -558,7 +545,7 @@ class Player(User, Widget):
         self.exp += enermy.exp
         self.gold += enermy.gold
 
-        if self.exp >= 5 * (self.lv / 2) * (1 + self.lv):
+        if self.exp >= 5*(self.lv/2)*(1+self.lv):
             self.lv += 1
             self.exp = 0
             self.maxhp = self.lv * self.maxhp
@@ -567,11 +554,14 @@ class Player(User, Widget):
             return True
         return False
 
+
+
     def save(self):
         return self.lv, self.ap, self.hp, self.maxhp
 
     def load(self, data):
         self.lv, self.ap, self.hp, self.maxhp = data
+
 
 
 player_data = [1, 1, 1000, 1000]
@@ -588,8 +578,6 @@ def status_name(game_status):
         return "보상"
 
 # root
-
-
 class TurnBattle(Widget):
     player = Player()
     enermy = Enermy()
@@ -624,6 +612,8 @@ class TurnBattle(Widget):
         else:
             raise
 
+
+
     def on_main_button(self, button, main_screen, enermy_screen, dmg, attack_effect, gold_text, exp_text, lv_text):
         """ on_main_button turn """
 
@@ -632,9 +622,8 @@ class TurnBattle(Widget):
             # text code
             self.load_enermy()
 
-            enermy_screen.center_x = enermy_screen.parent.center_x + 35
-            anim = Animation(
-                center_x=enermy_screen.parent.center_x, duration=.2)
+            enermy_screen.center_x=enermy_screen.parent.center_x+35
+            anim = Animation(center_x=enermy_screen.parent.center_x, duration=.2)
             if anim:
                 anim.stop(self)
             anim.start(enermy_screen)
@@ -648,29 +637,25 @@ class TurnBattle(Widget):
             app.sound['swing'].play()
 
             # enermy
-            left = Animation(
-                center_x=enermy_screen.parent.center_x - 10, duration=.2)
-            right = Animation(
-                center_x=enermy_screen.parent.center_x, duration=.2)
+            left = Animation(center_x=enermy_screen.parent.center_x-10, duration=.2)
+            right = Animation(center_x=enermy_screen.parent.center_x, duration=.2)
             anim = left + right
             if anim:
                 anim.stop(self)
             anim.start(enermy_screen)
 
             # player
-            left = Animation(
-                center_x=enermy_screen.parent.center_x - 10, duration=.2)
-            right = Animation(
-                center_x=enermy_screen.parent.center_x, duration=.2)
+            left = Animation(center_x=enermy_screen.parent.center_x-10, duration=.2)
+            right = Animation(center_x=enermy_screen.parent.center_x, duration=.2)
             anim = left + right
             if anim:
                 anim.stop(self)
             anim.start(enermy_screen)
 
+
             # damage
             # 실제 공격데미지 만큼 커지면 재미있을 듯
-            dmg_anim = Animation(
-                center_y=dmg.parent.center_y + 100, duration=.4, t='out_circ')
+            dmg_anim = Animation(center_y=dmg.parent.center_y+100, duration=.4, t='out_circ')
             dmg_anim &= Animation(opacity=0, duration=.5)
             dmg_anim &= Animation(font_size=60, duration=.5)
 
@@ -682,15 +667,14 @@ class TurnBattle(Widget):
             dmg_anim.start(dmg)
 
             # attack_effect
-            attack_effect_anim = Animation(
-                center_y=dmg.parent.center_y + 100, duration=2.0, t='out_circ')
+            attack_effect_anim = Animation(center_y=dmg.parent.center_y+100, duration=2.0, t='out_circ')
             attack_effect_anim &= Animation(opacity=0.0, duration=.5)
             attack_effect_anim &= Animation(size=(120, 120), duration=.5)
 
             if attack_effect_anim:
                 attack_effect.size = (40, 40)
                 attack_effect.center_y = attack_effect.parent.center_y
-                attack_effect.opacity = 1.0
+                attack_effect.opacity=1.0
                 attack_effect_anim.stop(self)
             attack_effect_anim.start(attack_effect)
 
@@ -709,37 +693,34 @@ class TurnBattle(Widget):
             is_levelup = self.player.get_reward(self.enermy)
 
             # gold_text
-            gold_anim = Animation(
-                center_y=gold_text.parent.center_y + 100, duration=.2, t='out_circ')
+            gold_anim = Animation(center_y=gold_text.parent.center_y+100, duration=.2, t='out_circ')
             gold_anim &= Animation(opacity=0, duration=1.0)
 
             if gold_anim:
                 gold_text.center_y = gold_text.parent.center_y + 40
-                gold_text.opacity = 1
+                gold_text.opacity=1
                 gold_anim.stop(self)
             gold_anim.start(gold_text)
 
             # exp
-            exp_anim = Animation(
-                center_y=exp_text.parent.center_y + 130, duration=.2, t='out_circ')
+            exp_anim = Animation(center_y=exp_text.parent.center_y+130, duration=.2, t='out_circ')
             exp_anim &= Animation(opacity=0, duration=1.0)
 
             if exp_anim:
                 exp_text.center_y = exp_text.parent.center_y + 40
-                exp_text.opacity = 1
+                exp_text.opacity=1
                 exp_anim.stop(self)
             exp_anim.start(exp_text)
 
             if is_levelup:
                 # lv
-                lv_anim = Animation(
-                    center_y=lv_text.parent.center_y + 150, duration=.2, t='out_circ')
+                lv_anim = Animation(center_y=lv_text.parent.center_y+150, duration=.2, t='out_circ')
                 lv_anim &= Animation(opacity=0, duration=2.0)
                 lv_anim &= Animation(font_size=100, duration=2.0)
                 if lv_anim:
-                    dmg.font_size = 25
+                    dmg.font_size=25
                     lv_text.center_y = lv_text.parent.center_y + 40
-                    lv_text.opacity = 1
+                    lv_text.opacity=1
                     lv_anim.stop(self)
                 lv_anim.start(lv_text)
 
@@ -759,11 +740,9 @@ class TurnBattle(Widget):
         # Text button name change
         button.name = status_name(self.game_status)
 
-
 class TurnApp(App):
     sound = {}
     music = None
-
     def build(self):
         global app
         app = self
@@ -778,6 +757,7 @@ class TurnApp(App):
         self.sound['swing'] = SoundLoader.load('sound/battle/swing.ogg')
         self.sound['coin'] = SoundLoader.load('sound/inventory/chainmail1.ogg')
 
+
         self.title = 'One RPG'
         self.game = TurnBattle()
         self.game.init()
@@ -789,8 +769,10 @@ class TurnApp(App):
         if self.music.game_status != 'play':
             self.music.play()
 
+
     def on_pause(self):
         return True
 
 if __name__ in ('__main__', '__android__'):
     TurnApp().run()
+
