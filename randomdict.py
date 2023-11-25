@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import UserDict
+from collections import UserDict
 import random
 
 
@@ -12,7 +12,7 @@ import random
 # 프로젝트마다 추가기능이 필요할텐데 잘 생각해보고 다른이들도 쓸것
 # 같으면 바로 추가하고 자신의 프로젝트에서만 쓸것 같다 싶으면 개별로
 # 상속받아 확장해서 쓸것.
-class RandomDict(UserDict.DictMixin):
+class RandomDict(UserDict):
     """랜덤하게 값을 뽑아올수 있는 딕셔너리
 
     random.choice 나 random.sample 이 시퀀스 타입만 받기 때문에
@@ -29,11 +29,12 @@ class RandomDict(UserDict.DictMixin):
     인덱스도 같이 들고 있도록 했다. __delitem__ 코드를 읽어보면 이해가 갈것.
     """
     def __init__(self, data=None):
-        self.__d = {}           # Key -> [Value, Index]
-        self.__l = []           # [Key]
-        if data and isinstance(data, dict):
-            for k, v in data.iteritems():
-                self.__setitem__(k, v)
+        super().__init__()
+        self.__d = {}  # Key -> [Value, Index]
+        self.__l = []  # [Key]
+        if data:
+            for k, v in data.items():  # Python 3에서는 .items() 사용
+                self[k] = v
 
     def __len__(self):
         return len(self.__l)
